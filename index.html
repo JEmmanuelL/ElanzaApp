@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Elanza</title>
+
+    <!-- Base e Infraestructura de estilos -->
+    <link rel="stylesheet" href="./styles/base.css">
+
+    <!-- Estilos de Landing Page -->
+    <link rel="stylesheet" href="./styles/landing.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Serif+Text&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <main class="landing-page">
+        <!-- Encabezado / Logo -->
+        <header class="landing-header">
+            <div class="logo">
+                <div class="logo-icon" aria-label="Elanza Isologo"></div>
+            </div>
+        </header>
+
+        <!-- Contenido principal interactivo -->
+        <section class="landing-content">
+            <h1 class="landing-title">
+                Tu ritual
+                comienza aquí.
+            </h1>
+            <p class="landing-subtitle">Todo tu acompañamiento, en un solo lugar.</p>
+            <div class="landing-actions">
+                <a href="./login.html" class="btn btn-templo" id="btnTemplo">Entrar a tu templo</a>
+                <a href="./login.html" class="btn btn-ritual" id="btnRitual">Inicia tu ritual</a>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/modules/landing/index.js"></script>
+</body>
+
+</html>

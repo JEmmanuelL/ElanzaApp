@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - Elanza</title>
+    <link rel="stylesheet" href="./styles/base.css">
+    <link rel="stylesheet" href="./styles/layout.css">
+    <link rel="stylesheet" href="./styles/components.css">
+    <link rel="stylesheet" href="./styles/responsive.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0056b3">
+</head>
+
+<body>
+    <header id="main-navbar"></header>
+
+    <main class="page-layout">
+        <header class="page-header">
+            <h1>Historial de Pacientes</h1>
+            <div class="search-bar">
+                <input type="text" id="searchHistory" placeholder="Buscar por paciente o documento...">
+            </div>
+        </header>
+
+        <section class="history-list" id="historyContainer">
+            <!-- Items de historial se renderizarán aquí -->
+        </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

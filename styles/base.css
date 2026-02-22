@@ -1,0 +1,44 @@
+// Base Styles
+
+:root {
+    --primary-color: #0056b3;
+    --primary-hover: #004494;
+    --secondary-color: #f8f9fa;
+    --text-main: #333333;
+    --text-muted: #6c757d;
+    --bg-main: #ffffff;
+    --bg-off: #f4f6f9;
+    --border-color: #dee2e6;
+    --border-radius: 8px;
+    --font-family: system-ui, -apple-system, sans-serif;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-main);
+    background-color: var(--bg-off);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-main);
+}

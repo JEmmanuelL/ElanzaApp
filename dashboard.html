@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Elanza</title>
+    <link rel="stylesheet" href="./styles/base.css">
+    <link rel="stylesheet" href="./styles/layout.css">
+    <link rel="stylesheet" href="./styles/components.css">
+    <link rel="stylesheet" href="./styles/responsive.css">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0056b3">
+</head>
+
+<body>
+    <header id="main-navbar"></header>
+
+    <main class="dashboard-layout">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="./dashboard.html" class="active">Inicio</a></li>
+                    <li><a href="./appointments.html">Citas</a></li>
+                    <li><a href="./history.html">Historial</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <section class="content">
+            <h1>Bienvenido a Elanza</h1>
+            <div class="dashboard-widgets">
+                <!-- Widgets base placeholder -->
+                <div class="widget">Próximas citas</div>
+                <div class="widget">Estadísticas</div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

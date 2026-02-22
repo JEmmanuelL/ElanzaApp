@@ -1,0 +1,233 @@
+/* landing.css - Estilos específicos para la página de inicio */
+
+/* Configuración de fuentes y resets particulares */
+.landing-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+/* Pseudo-elemento para el fondo móvil con reflejo (espejo) y degradado */
+.landing-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Degradado de abajo (color sólido) hacia arriba (transparente) más la imagen */
+    background-image: linear-gradient(to top, rgba(246, 239, 239, 1) 10%, rgba(246, 239, 239, 0.7) 40%, rgba(246, 239, 239, 0) 70%), url('../assets/images/principal-2.png');
+    background-size: cover;
+    /* Movemos el foco de la imagen para que la modelo/rostro quede más al centro */
+    background-position: 15% center;
+    background-repeat: no-repeat;
+    /* Efecto espejo a la imagen */
+    transform: scaleX(-1);
+}
+
+/* Encabezado */
+.landing-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    /* Blanco en mobile por el fondo */
+    transition: color 0.3s ease;
+}
+
+.logo-icon {
+    width: 206px;
+    height: 76px;
+    margin-bottom: 8px;
+    background-color: #ffffff;
+    /* Color en mobile */
+    -webkit-mask: url('../assets/icons/isologo.svg') no-repeat center / contain;
+    mask: url('../assets/icons/isologo.svg') no-repeat center / contain;
+}
+
+.logo-text {
+    font-family: var(--font-family);
+    font-size: 1.4rem;
+    letter-spacing: 0.25em;
+    font-weight: 300;
+}
+
+/* Contenido Principal */
+.landing-content {
+    text-align: center;
+    margin-bottom: 5vh;
+    /* Empuja el contenido hacia arriba desde abajo */
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.landing-title {
+    font-family: 'DM Serif Text', serif;
+    font-size: 3rem;
+    font-weight: normal;
+    line-height: 1.1;
+    color: #89846B;
+    margin: 0;
+}
+
+.landing-subtitle {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.15rem;
+    color: #333333;
+    font-weight: 700;
+}
+
+/* Acciones (Botones) */
+.landing-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+/* Botones re-estilizados usando las clases .btn estándar base */
+.btn-templo,
+.btn-ritual {
+    width: 85%;
+    max-width: 320px;
+    border-radius: 30px;
+    /* Bordes altamente redondeados (pill) */
+    padding: 14px 24px;
+    font-weight: 500;
+    font-size: 1.1rem;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+
+}
+
+.btn-templo {
+    background-color: #f7dfbe;
+    /* Beige/Dorado claro en mobile */
+    color: #584a3b;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-templo:hover {
+    background-color: #ebcc9e;
+    color: #584a3b;
+}
+
+.btn-ritual {
+    background-color: #c9a797;
+    /* Marrón melocotón */
+    color: #000000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-ritual:hover {
+    background-color: #b89382;
+    color: #000000;
+}
+
+/* =========================================================
+   Versión de Escritorio (Desktop)
+   ========================================================= */
+@media (min-width: 768px) {
+    .landing-page {
+        /* Desactivamos el fondo del .landing-page padre en desktop porque usamos pseudo-elemento también o directamente en el contenedor */
+        background-color: transparent;
+    }
+
+    .landing-page::before {
+        /* Degradado de izquierda a derecha para desktop, sobreescribiendo el pseudo-elemento móvil */
+        background-image: linear-gradient(to right, rgba(246, 239, 239, 0.95) 0%, rgba(246, 239, 239, 0.6) 35%, rgba(246, 239, 239, 0.20) 65%), url('../assets/images/principal.png');
+        background-size: cover;
+        background-position: center;
+        /* En desktop NO queremos efecto espejo, así que removemos el scaleX(-1) */
+        transform: none;
+    }
+
+    .landing-page {
+        padding: 5% 10%;
+        justify-content: flex-start;
+    }
+
+    .landing-header {
+        justify-content: flex-start;
+        padding-top: 0;
+    }
+
+    .logo {
+        color: #89846B;
+    }
+
+    .logo-icon {
+        background-color: #89846B;
+    }
+
+    .landing-content {
+        text-align: left;
+        max-width: 650px;
+        margin-top: 15vh;
+        margin-bottom: 0;
+    }
+
+    .landing-title {
+        font-family: 'DM Serif Text', serif;
+        color: #89846B;
+        font-size: 96px;
+        line-height: 1.2;
+        margin-bottom: 20px;
+    }
+
+    .landing-subtitle {
+        display: block;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 20pt;
+        font-weight: 700;
+        margin-bottom: 40px;
+    }
+
+    .landing-actions {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 32px;
+    }
+
+    .btn-templo,
+    .btn-ritual {
+        padding: 16px 36px;
+        font-size: 1.2rem;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-templo {
+        width: auto;
+        background-color: #8c8872;
+        /* Color oliva sólido sobre desktop */
+        color: #ffffff;
+    }
+
+    .btn-templo:hover {
+        background-color: #716e5c;
+        color: #ffffff;
+    }
+
+    .btn-ritual {
+        width: auto;
+        background-color: #D4B29F;
+        color: #333333;
+    }
+
+    .btn-ritual:hover {
+        background-color: #cca883;
+        color: #333333;
+    }
+}
