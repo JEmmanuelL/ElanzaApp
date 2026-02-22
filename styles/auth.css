@@ -1,0 +1,215 @@
+/* auth.css - Estilos específicos para las páginas de Login y Registro */
+
+/* Contenedor centralizado para la página de autenticación */
+.auth-page {
+    /* Ajustamos el padding para centrar mejor el contenido en pantallas grandes */
+    justify-content: flex-start;
+}
+
+.auth-page .landing-header {
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .auth-page {
+        justify-content: center;
+        align-items: center;
+        /* Centrado en desktop */
+        padding-top: 10vh;
+    }
+}
+
+.auth-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+    .auth-content {
+        justify-content: center;
+        /* Centrado en desktop */
+        margin-top: 30px;
+    }
+}
+
+/* Tarjeta de autenticación (Glassmorphism / Clean look) */
+.auth-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.auth-card.register-card {
+    max-width: 550px;
+    /* Un poco más ancha para las columnas del registro */
+}
+
+.auth-title {
+    font-family: 'DM Serif Text', serif;
+    font-size: 2.2rem;
+    color: #89846B;
+    margin: 0 0 8px 0;
+}
+
+.auth-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    color: #555;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+}
+
+/* Formulario */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+}
+
+/* Soporte para 2 columnas en registro */
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 480px) {
+    .form-row {
+        flex-direction: row;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    padding-left: 4px;
+}
+
+.form-input,
+.form-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #fcfcfc;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #89846B;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(137, 132, 107, 0.1);
+}
+
+.btn-auth {
+    width: auto;
+    min-width: 220px;
+    align-self: center;
+    /* Centra el botón horizontalmente en el formulario local */
+    margin-top: 10px;
+    padding: 14px 24px;
+    border-radius: 30px;
+    /* Más redondeado según .btn-templo */
+    font-size: 1.1rem;
+}
+
+/* Divisor Social */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+    color: #999;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.auth-divider span {
+    padding: 0 10px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* Botones Sociales */
+.social-auth {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #333;
+}
+
+.btn-social:hover {
+    background-color: #f7f7f7;
+}
+
+/* Ajustes opcionales para botones sociales */
+.social-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Pie de formulario */
+.auth-footer {
+    margin-top: 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.auth-link {
+    color: #89846B;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: #584a3b;
+    text-decoration: underline;
+}
