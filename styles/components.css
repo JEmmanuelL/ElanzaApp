@@ -67,3 +67,43 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     margin-bottom: var(--spacing-md);
 }
+
+/* Custom Modal */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.custom-modal .modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .modal-title {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--text-main, #333);
+}
+
+.custom-modal .modal-message {
+    margin-bottom: 20px;
+    color: var(--text-muted, #666);
+    line-height: 1.5;
+}
+
+.custom-modal .modal-btn {
+    width: 100%;
+}

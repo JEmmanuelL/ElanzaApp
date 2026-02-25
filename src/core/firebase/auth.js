@@ -3,7 +3,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithPopup,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    getIdToken
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirebaseAuth, getGoogleProvider, getFacebookProvider } from "./config.js";
 
@@ -39,3 +40,18 @@ export const observeAuthState = (callback) => {
     return onAuthStateChanged(auth, callback);
 };
 
+/**
+ * Fuerza la recarga del token de autenticación del usuario actual.
+ * Útil cuando se cambian los Custom Claims (como el rol) desde Cloud Functions
+ * para que el frontend obtenga los permisos actualizados inmediatamente.
+ * @returns {Promise<string|null>} El nuevo token si hay usuario, o null si no lo hay.
+ */
+export const forceRefreshToken = async () => {
+    const auth = getFirebaseAuth();
+    const user = auth.currentUser;
+    if (user) {
+        // El parámetro 'true' fuerza la recarga desde el servidor en lugar de usar el caché
+        return await getIdToken(user, true);
+    }
+    return null;
+};

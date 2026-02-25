@@ -9,9 +9,13 @@ import {
     getDocs,
     orderBy,
     limit,
-    startAfter
+    startAfter,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getFirebaseDb } from "./config.js";
+
+// Export para uso en otros módulos
+export { serverTimestamp };
 
 export const getDocument = async (collectionName, id) => {
     const db = getFirebaseDb();

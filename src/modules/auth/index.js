@@ -1,14 +1,44 @@
-import { loginWithEmail, registerWithEmail, loginWithGoogle, loginWithFacebook } from '../../core/firebase/auth.js';
-import { setDocument, getDocument } from '../../core/firebase/firestore.js';
+import { loginWithEmail, registerWithEmail, loginWithGoogle, loginWithFacebook, logout } from '../../core/firebase/auth.js';
+import { setDocument, getDocument, updateDocument, serverTimestamp } from '../../core/firebase/firestore.js';
+
+const showErrorModal = (message, redirectUrl = null) => {
+    const modal = document.getElementById('errorModal');
+    const msgEl = document.getElementById('modalMessage');
+    const btn = document.getElementById('modalCloseBtn');
+
+    if (modal && msgEl && btn) {
+        msgEl.textContent = message;
+        modal.style.display = 'flex';
+
+        btn.onclick = () => {
+            modal.style.display = 'none';
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            }
+        };
+    } else {
+        alert(message);
+        if (redirectUrl) window.location.href = redirectUrl;
+    }
+};
 
 const saveUserProfile = async (user, additionalData = {}) => {
     try {
+        const ts = serverTimestamp();
         const userProfile = {
             Rol: 'Usuario Activo', // Default role
             email: user.email,
-            createdAt: new Date().toISOString(),
+            createdAt: ts,
+            updatedAt: ts,
+            lastLoginAt: ts,
             ...additionalData
         };
+
+        if (userProfile.fechaNacimiento && typeof userProfile.fechaNacimiento === 'string') {
+            // "YYYY-MM-DD" + "T00:00:00" ensures no timezone shift shifts the day backwards
+            userProfile.fechaNacimiento = new Date(userProfile.fechaNacimiento + 'T00:00:00');
+        }
+
         await setDocument('users', user.uid, userProfile);
         console.log('Perfil de usuario guardado en Firestore');
     } catch (error) {
@@ -50,6 +80,7 @@ export const initLogin = () => {
             try {
                 const result = await loginWithEmail(email, password);
                 console.log('Login exitoso', result);
+                await updateDocument('users', result.user.uid, { lastLoginAt: serverTimestamp() });
                 await handleAuthRedirect(result.user.uid);
             } catch (error) {
                 console.error('Error en login con email:', error);
@@ -73,6 +104,8 @@ export const initLogin = () => {
                         perfilCompletado: false,
                         Rol: 'Usuario Activo'
                     });
+                } else {
+                    await updateDocument('users', result.user.uid, { lastLoginAt: serverTimestamp() });
                 }
 
                 await handleAuthRedirect(result.user.uid);
@@ -98,6 +131,8 @@ export const initLogin = () => {
                         perfilCompletado: false,
                         Rol: 'Usuario Activo'
                     });
+                } else {
+                    await updateDocument('users', result.user.uid, { lastLoginAt: serverTimestamp() });
                 }
 
                 await handleAuthRedirect(result.user.uid);
@@ -151,7 +186,11 @@ export const initRegister = () => {
                 await handleAuthRedirect(result.user.uid);
             } catch (error) {
                 console.error('Error en registro:', error);
-                alert('Error al registrarse: ' + error.message);
+                if (error.code === 'auth/email-already-in-use') {
+                    showErrorModal('Este correo electrónico ya está registrado. Por favor, inicia sesión.', './login.html');
+                } else {
+                    showErrorModal('Error al registrarse: ' + error.message);
+                }
             }
         });
     }
@@ -163,14 +202,19 @@ export const initRegister = () => {
                 console.log('Google login/registro exitoso', result);
 
                 const userDoc = await getDocument('users', result.user.uid);
-                if (!userDoc) {
-                    await saveUserProfile(result.user, {
-                        nombre: result.user.displayName,
-                        authProvider: 'google',
-                        perfilCompletado: false,
-                        Rol: 'Usuario Activo'
-                    });
+                if (userDoc) {
+                    // El usuario ya existe, no debería registrarse de nuevo
+                    await logout();
+                    showErrorModal('Esta cuenta de Google ya está registrada. Por favor, ve a la página de Iniciar Sesión.', './login.html');
+                    return;
                 }
+
+                await saveUserProfile(result.user, {
+                    nombre: result.user.displayName,
+                    authProvider: 'google',
+                    perfilCompletado: false,
+                    Rol: 'Usuario Activo'
+                });
 
                 await handleAuthRedirect(result.user.uid);
             } catch (error) {
@@ -187,14 +231,19 @@ export const initRegister = () => {
                 console.log('Facebook login/registro exitoso', result);
 
                 const userDoc = await getDocument('users', result.user.uid);
-                if (!userDoc) {
-                    await saveUserProfile(result.user, {
-                        nombre: result.user.displayName,
-                        authProvider: 'facebook',
-                        perfilCompletado: false,
-                        Rol: 'Usuario Activo'
-                    });
+                if (userDoc) {
+                    // El usuario ya existe, no debería registrarse de nuevo
+                    await logout();
+                    showErrorModal('Esta cuenta de Facebook ya está registrada. Por favor, ve a la página de Iniciar Sesión.', './login.html');
+                    return;
                 }
+
+                await saveUserProfile(result.user, {
+                    nombre: result.user.displayName,
+                    authProvider: 'facebook',
+                    perfilCompletado: false,
+                    Rol: 'Usuario Activo'
+                });
 
                 await handleAuthRedirect(result.user.uid);
             } catch (error) {

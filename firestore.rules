@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getRole() {
+      // Usamos el token personalizado que generaremos con Cloud Functions
+      return request.auth.token.role;
+    }
+
+    function isSuperAdmin() {
+      return getRole() == "Super Administrador";
+    }
+
+    function isAdmin() {
+      return getRole() == "Administrador";
+    }
+
+    function isActiveUser() {
+      return getRole() == "Usuario Activo" ||
+             getRole() == "Administrador" ||
+             getRole() == "Super Administrador";
+    }
+
+    match /services/{serviceId} {
+      allow read: if isAuthenticated() && isActiveUser();
+      allow create, update, delete: if isAuthenticated() && isSuperAdmin();
+    }
+
+    match /appointments/{appointmentId} {
+      allow create: if isAuthenticated() && isActiveUser();
+      allow read: if isAuthenticated() && isActiveUser();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if request.auth.uid == userId || isSuperAdmin();
+    }
+  }
+}

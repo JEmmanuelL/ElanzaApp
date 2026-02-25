@@ -10,15 +10,16 @@
     <title>Registro - Elanza</title>
 
     <!-- Base e Infraestructura de estilos -->
-    <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/base.css?v=20260224224500">
+    <link rel="stylesheet" href="./styles/components.css?v=20260224224500">
 
     <!-- Estilos de Landing Page (para fondo) -->
-    <link rel="stylesheet" href="./styles/landing.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/landing.css?v=20260224224500">
 
     <!-- Estilos de autenticación -->
-    <link rel="stylesheet" href="./styles/auth.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/auth.css?v=20260224224500">
 
-    <link rel="manifest" href="./manifest.json?v=20260224183600">
+    <link rel="manifest" href="./manifest.json?v=20260224224500">
     <meta name="theme-color" content="#ffffff">
 
     <!-- Google Fonts -->
@@ -143,7 +144,17 @@
         </section>
     </main>
 
-    <script type="module" src="./src/main.js?v=20260224183600"></script>
+    <!-- Custom Modal -->
+    <div id="errorModal" class="custom-modal" style="display: none;">
+        <div class="modal-content">
+            <h3 class="modal-title" style="color: var(--primary-color);">Aviso</h3>
+            <p id="modalMessage" class="modal-message"></p>
+            <button id="modalCloseBtn" class="btn btn-templo modal-btn"
+                style="background-color: #B09C64; color: white !important; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px;">Aceptar</button>
+        </div>
+    </div>
+
+    <script type="module" src="./src/main.js?v=20260224224500"></script>
 </body>
 
 </html>

@@ -1,5 +1,5 @@
 import { observeAuthState } from '../../core/firebase/auth.js';
-import { getDocument, updateDocument } from '../../core/firebase/firestore.js';
+import { getDocument, setDocument, serverTimestamp } from '../../core/firebase/firestore.js';
 
 export const initProfileCompletion = () => {
     const form = document.getElementById('completeProfileForm');
@@ -27,7 +27,16 @@ export const initProfileCompletion = () => {
                 if (userProfile.apPaterno) document.getElementById('apPaterno').value = userProfile.apPaterno;
                 if (userProfile.apMaterno) document.getElementById('apMaterno').value = userProfile.apMaterno;
                 if (userProfile.telefono) document.getElementById('telefono').value = userProfile.telefono;
-                if (userProfile.fechaNacimiento) document.getElementById('fechaNacimiento').value = userProfile.fechaNacimiento;
+                if (userProfile.fechaNacimiento) {
+                    let d = userProfile.fechaNacimiento;
+                    if (d.toDate) d = d.toDate(); // From Firestore Timestamp
+                    if (d instanceof Date) {
+                        let tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                        document.getElementById('fechaNacimiento').value = (new Date(d.getTime() - tzoffset)).toISOString().split('T')[0];
+                    } else {
+                        document.getElementById('fechaNacimiento').value = d;
+                    }
+                }
                 if (userProfile.sexo) document.getElementById('sexo').value = userProfile.sexo;
             }
 
@@ -45,18 +54,24 @@ export const initProfileCompletion = () => {
             return;
         }
 
+        let fechaNac = document.getElementById('fechaNacimiento').value;
+        if (fechaNac && typeof fechaNac === 'string') {
+            fechaNac = new Date(fechaNac + 'T00:00:00');
+        }
+
         const profileData = {
             apPaterno: document.getElementById('apPaterno').value,
             apMaterno: document.getElementById('apMaterno').value,
             telefono: document.getElementById('telefono').value,
-            fechaNacimiento: document.getElementById('fechaNacimiento').value,
+            fechaNacimiento: fechaNac,
             sexo: document.getElementById('sexo').value,
             perfilCompletado: true,
-            Rol: 'Usuario Activo'
+            Rol: 'Usuario Activo',
+            updatedAt: serverTimestamp()
         };
 
         try {
-            await updateDocument('users', currentUser.uid, profileData);
+            await setDocument('users', currentUser.uid, profileData);
             console.log("Perfil completado exitosamente");
 
             // Re-fetch user to check role for redirection

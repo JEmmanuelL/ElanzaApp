@@ -1,8 +1,8 @@
-// Base Styles
+/* Base Styles */
 
 :root {
-    --primary-color: #0056b3;
-    --primary-hover: #004494;
+    --primary-color: #B09C64;
+    --primary-hover: #B09C64;
     --secondary-color: #f8f9fa;
     --text-main: #333333;
     --text-muted: #6c757d;
@@ -38,7 +38,12 @@ a:hover {
     text-decoration: underline;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-bottom: var(--spacing-md);
     color: var(--text-main);
 }
