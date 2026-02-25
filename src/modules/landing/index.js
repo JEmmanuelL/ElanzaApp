@@ -26,3 +26,4 @@ export const initLanding = () => {
 document.addEventListener('DOMContentLoaded', () => {
     initLanding();
 });
+

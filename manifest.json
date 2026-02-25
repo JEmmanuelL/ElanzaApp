@@ -2,7 +2,7 @@
   "name": "Elanza",
   "short_name": "Elanza",
   "description": "Elanza - Appointment Management",
-  "start_url": "./dashboard.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0056b3",

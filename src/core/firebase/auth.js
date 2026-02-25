@@ -1,18 +1,41 @@
-// Auth wrapper around Firebase Authentication
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirebaseAuth, getGoogleProvider, getFacebookProvider } from "./config.js";
 
 export const loginWithEmail = async (email, password) => {
-    // Placeholder login logic
-    console.log('[Auth] Attempting login with email', email);
-    return Promise.resolve({ user: { email } });
+    const auth = getFirebaseAuth();
+    return await signInWithEmailAndPassword(auth, email, password);
+};
+
+export const registerWithEmail = async (email, password) => {
+    const auth = getFirebaseAuth();
+    return await createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const loginWithGoogle = async () => {
+    const auth = getFirebaseAuth();
+    const provider = getGoogleProvider();
+    return await signInWithPopup(auth, provider);
+};
+
+export const loginWithFacebook = async () => {
+    const auth = getFirebaseAuth();
+    const provider = getFacebookProvider();
+    return await signInWithPopup(auth, provider);
 };
 
 export const logout = async () => {
-    // Placeholder logout logic
-    console.log('[Auth] Logging out');
-    return Promise.resolve();
+    const auth = getFirebaseAuth();
+    return await signOut(auth);
 };
 
-export const getCurrentUser = () => {
-    // Returns current user or null
-    return null;
+export const observeAuthState = (callback) => {
+    const auth = getFirebaseAuth();
+    return onAuthStateChanged(auth, callback);
 };
+

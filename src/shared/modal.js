@@ -9,3 +9,4 @@ export const closeModal = () => {
     console.log('Closing modal');
     // Generic modal removal logic
 };
+

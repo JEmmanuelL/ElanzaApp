@@ -2,41 +2,120 @@
 <html lang="es">
 
 <head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Elanza</title>
-    <link rel="stylesheet" href="./styles/base.css">
-    <link rel="stylesheet" href="./styles/layout.css">
-    <link rel="stylesheet" href="./styles/components.css">
-    <link rel="stylesheet" href="./styles/responsive.css">
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#0056b3">
+    <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/layout.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/components.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/responsive.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/dashboard.css?v=20260224183600">
+    <link rel="manifest" href="./manifest.json?v=20260224183600">
+    <meta name="theme-color" content="#ffffff">
 </head>
 
-<body>
-    <header id="main-navbar"></header>
+<body class="dashboard-body">
 
-    <main class="dashboard-layout">
-        <aside class="sidebar">
-            <nav>
-                <ul>
-                    <li><a href="./dashboard.html" class="active">Inicio</a></li>
-                    <li><a href="./appointments.html">Citas</a></li>
-                    <li><a href="./history.html">Historial</a></li>
-                </ul>
-            </nav>
-        </aside>
-        <section class="content">
-            <h1>Bienvenido a Elanza</h1>
-            <div class="dashboard-widgets">
-                <!-- Widgets base placeholder -->
-                <div class="widget">Próximas citas</div>
-                <div class="widget">Estadísticas</div>
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="desktop-sidebar">
+        <div class="sidebar-top">
+            <div class="menu-item-container">
+                <img src="./assets/icons/IconApp/menu-hamburguesa.svg" alt="Menu" class="sidebar-icon">
+                <span class="sidebar-text">Menú</span>
+            </div>
+            <!-- More menu items could go here later -->
+        </div>
+        <div class="sidebar-bottom">
+            <div class="menu-item-container">
+                <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="sidebar-icon brand-icon">
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-mobile-container">
+        <!-- Header -->
+        <header class="dash-header">
+            <div class="dash-welcome">
+                <div class="welcome-card">
+                    <span class="welcome-text">¡Bienvenido!</span>
+                    <h1 class="welcome-name">Emmanuel</h1>
+                </div>
+            </div>
+
+            <div class="desktop-logo-mask"></div>
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="dash-logo mobile-logo">
+        </header>
+
+        <!-- Search and Filter -->
+        <section class="dash-actions">
+            <div class="search-bar">
+                <img src="./assets/icons/IconApp/buscar.svg" alt="Buscar" class="search-icon">
+                <input type="text" id="searchInput" placeholder="Buscar por correo...">
+            </div>
+            <div class="filter-wrapper" style="position: relative;">
+                <button class="filter-btn" id="filterBtn">
+                    <img src="./assets/icons/IconApp/filtro.svg" alt="Filtrar">
+                </button>
+                <div class="filter-dropdown" id="filterDropdown"
+                    style="display: none; position: absolute; right: 0; top: 70px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 12px; z-index: 100; min-width: 180px;">
+                    <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 0.9rem; color: #666;">Filtrar por Rol</p>
+                    <select id="roleFilter" class="form-select"
+                        style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-family: var(--font-family);">
+                        <option value="">Todos los roles</option>
+                        <option value="Usuario Activo">Usuario Activo</option>
+                        <option value="Usuario Inactivo">Usuario Inactivo</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Super Administrador">Super Administrador</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registros (User list) -->
+        <section class="dash-records">
+            <h2 class="records-title">Registros Recientes</h2>
+            <div class="records-list">
+                <!-- Dynamically populated by Javascript -->
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-controls"
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                <button id="prevPageBtn" class="btn"
+                    style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <img src="./assets/icons/IconApp/flecha.svg" style="transform: rotate(180deg); width: 14px;"
+                        alt="Anterior"> Anterior
+                </button>
+                <span id="pageInfo" style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Página
+                    1</span>
+                <button id="nextPageBtn" class="btn"
+                    style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    Siguiente <img src="./assets/icons/IconApp/flecha.svg" style="width: 14px;" alt="Siguiente">
+                </button>
             </div>
         </section>
     </main>
 
-    <script type="module" src="./src/main.js"></script>
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <img src="./assets/icons/IconApp/usuario.svg" alt="Usuario">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Compras">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/calendario.svg" alt="Calendario">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/contratos.svg" alt="Contratos">
+        </a>
+    </nav>
+
+    <script type="module" src="./src/main.js?v=20260224191500"></script>
 </body>
 
 </html>

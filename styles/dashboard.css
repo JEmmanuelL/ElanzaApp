@@ -1,0 +1,562 @@
+/* Dashboard Specific Styles */
+
+.dashboard-body {
+    /* Set background image with desktop gradient first */
+    background-image: linear-gradient(to right, rgba(246, 239, 239, 0.95) 0%, rgba(246, 239, 239, 0.6) 35%, rgba(246, 239, 239, 0.20) 65%), url('../assets/images/fondo-01.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Desktop Sidebar --- */
+.desktop-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 72px;
+    background-color: #B09C64;
+    /* Updated PC navbar color */
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 32px 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.desktop-sidebar:hover {
+    width: 240px;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-top,
+.sidebar-bottom {
+    width: 100%;
+}
+
+.menu-item-container {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+}
+
+.menu-item-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    /* Icons blank on PC */
+}
+
+.sidebar-text {
+    margin-left: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    /* Text blank on PC */
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.desktop-sidebar:hover .sidebar-text {
+    opacity: 1;
+    transition-delay: 0.1s;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    margin-left: -4px;
+    /* visually center slightly larger icon */
+}
+
+/* --- Main content wrapper --- */
+.dashboard-mobile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+    padding-bottom: 100px;
+    /* Space for bottom nav on mobile */
+    margin-left: 80px;
+    /* offset for desktop sidebar */
+}
+
+/* Header */
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    background: transparent;
+    position: relative;
+}
+
+.dash-welcome {
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-card {
+    background-color: #ffffff;
+    border-radius: 50px;
+    padding: 12px 28px;
+    display: inline-flex;
+    align-items: center;
+    /* prevent stretching if wrapped */
+    flex-wrap: wrap;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+}
+
+.welcome-text {
+    font-size: 1.1rem;
+    color: #89846B;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.welcome-name {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-main);
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+    /* Let long google names break */
+}
+
+/* PC Logo Mask */
+.desktop-logo-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 160px;
+    height: 56px;
+    background-color: #89846B;
+    -webkit-mask: url('../assets/icons/isologo.svg') no-repeat right center / contain;
+    mask: url('../assets/icons/isologo.svg') no-repeat right center / contain;
+    z-index: 10;
+}
+
+/* Hide mobile logo on desktop by default */
+.mobile-logo {
+    display: none;
+}
+
+.desktop-logo {
+    display: block;
+}
+
+/* Search and Filter */
+.dash-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: #f4f4f4;
+    /* gris tirando a blanco */
+    border-radius: 16px;
+    padding: 0 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    /* #B09C64 filter approximation */
+    filter: invert(68%) sepia(21%) saturate(543%) hue-rotate(6deg) brightness(87%) contrast(85%);
+}
+
+.search-bar input {
+    width: 100%;
+    border: none;
+    padding: 18px 16px;
+    font-size: 1.05rem;
+    outline: none;
+    background: transparent;
+    color: var(--text-main);
+}
+
+.filter-btn {
+    background-color: #B09C64;
+    /* Updated color */
+    border: none;
+    border-radius: 16px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(176, 156, 100, 0.25);
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.filter-btn:hover {
+    background-color: #9c8a58;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(176, 156, 100, 0.35);
+}
+
+.filter-btn img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
+/* Records List */
+.records-title {
+    font-size: 1.4rem;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.record-card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
+    border-left: 6px solid transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.record-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.record-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.record-info strong {
+    font-size: 1.15rem;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+.record-info span {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.record-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.role-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    /* Quitado el padding/círculo para PC */
+    background-color: transparent !important;
+    /* Asegurar sin fondo de pastilla */
+}
+
+.role-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.role-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.edit-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, color 0.2s;
+}
+
+.edit-action:hover {
+    opacity: 1;
+    color: var(--primary-color);
+}
+
+.edit-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.edit-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Colorimetria por Rol - Background gradients */
+
+/* Inactivo (Gris) */
+.role-inactive {
+    border-left-color: #9E9E9E;
+    background: linear-gradient(to right, rgba(158, 158, 158, 0.15) 0%, rgba(255, 255, 255, 1) 40%);
+}
+
+.role-inactive .role-name {
+    color: #9E9E9E;
+}
+
+.role-inactive .role-icon {
+    filter: invert(65%) sepia(3%) saturate(14%) hue-rotate(338deg) brightness(97%) contrast(90%);
+}
+
+/* Activo (Verde) */
+.role-active {
+    border-left-color: #4CAF50;
+    background: linear-gradient(to right, rgba(76, 175, 80, 0.15) 0%, rgba(255, 255, 255, 1) 40%);
+}
+
+.role-active .role-name {
+    color: #4CAF50;
+}
+
+.role-active .role-icon {
+    filter: invert(53%) sepia(90%) saturate(368%) hue-rotate(76deg) brightness(89%) contrast(85%);
+}
+
+/* Administrador (Morado) */
+.role-admin {
+    border-left-color: #9C27B0;
+    background: linear-gradient(to right, rgba(156, 39, 176, 0.15) 0%, rgba(255, 255, 255, 1) 40%);
+}
+
+.role-admin .role-name {
+    color: #9C27B0;
+}
+
+.role-admin .role-icon {
+    filter: invert(29%) sepia(61%) saturate(3369%) hue-rotate(279deg) brightness(87%) contrast(98%);
+}
+
+/* Super Administrador (Rojo) */
+.role-superadmin {
+    border-left-color: #F44336;
+    background: linear-gradient(to right, rgba(244, 67, 54, 0.15) 0%, rgba(255, 255, 255, 1) 40%);
+}
+
+.role-superadmin .role-name {
+    color: #F44336;
+}
+
+.role-superadmin .role-icon {
+    filter: invert(36%) sepia(90%) saturate(4156%) hue-rotate(345deg) brightness(91%) contrast(94%);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    display: none;
+    /* Hidden on desktop */
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 0 24px 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.08);
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 16px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.5;
+}
+
+.nav-item.active {
+    opacity: 1;
+    background-color: rgba(176, 156, 100, 0.1);
+    transform: translateY(-4px);
+}
+
+.nav-item img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    transition: filter 0.2s ease;
+    /* #B09C64 filter */
+    filter: invert(68%) sepia(21%) saturate(543%) hue-rotate(6deg) brightness(87%) contrast(85%);
+}
+
+.nav-item.active img {
+    /* Slightly more opaque for active state */
+    filter: invert(68%) sepia(50%) saturate(543%) hue-rotate(6deg) brightness(85%) contrast(100%);
+}
+
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+    .dashboard-body {
+        /* Mobile gradient (bottom to top) */
+        background-image: linear-gradient(to top, rgba(246, 239, 239, 1) 10%, rgba(246, 239, 239, 0.7) 40%, rgba(246, 239, 239, 0) 70%), url('../assets/images/fondo-01.png');
+    }
+
+    .dashboard-mobile-container {
+        padding: 24px 16px;
+        padding-bottom: 140px;
+        margin-left: 0;
+        /* Reset desktop sidebar offset */
+    }
+
+    .desktop-sidebar {
+        display: none;
+        /* Hide sidebar completely on mobile */
+    }
+
+    .dash-header {
+        align-items: center;
+    }
+
+    .desktop-logo-mask {
+        display: none;
+    }
+
+    .mobile-logo {
+        display: block;
+        height: 52px;
+        width: 52px;
+        margin-left: auto;
+    }
+
+    .welcome-card {
+        padding: 10px 20px;
+    }
+
+    .welcome-text {
+        font-size: 0.95rem;
+    }
+
+    .welcome-name {
+        font-size: 1.25rem;
+    }
+
+    .bottom-nav {
+        display: flex;
+        /* Show only on mobile screens */
+    }
+
+    .records-list {
+        gap: 12px;
+    }
+
+    .record-card {
+        padding: 18px 16px;
+        border-radius: 12px;
+        /* Increase gradient coverage slightly on mobile */
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        /* Note: overriden by role rules */
+    }
+
+    /* override gradient length for mobile */
+    .role-inactive {
+        background: linear-gradient(to right, rgba(158, 158, 158, 0.15) 0%, rgba(255, 255, 255, 1) 70%) !important;
+    }
+
+    .role-active {
+        background: linear-gradient(to right, rgba(76, 175, 80, 0.15) 0%, rgba(255, 255, 255, 1) 70%) !important;
+    }
+
+    .role-admin {
+        background: linear-gradient(to right, rgba(156, 39, 176, 0.15) 0%, rgba(255, 255, 255, 1) 70%) !important;
+    }
+
+    .role-superadmin {
+        background: linear-gradient(to right, rgba(244, 67, 54, 0.15) 0%, rgba(255, 255, 255, 1) 70%) !important;
+    }
+
+    .record-info strong {
+        font-size: 1.05rem;
+    }
+
+    .record-actions {
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .record-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .record-info {
+        width: 100%;
+        word-break: break-word;
+        /* Ensure long emails break instead of overflowing */
+    }
+
+    /* On mobile, hide the text of the role but maintain the icon */
+    .role-name {
+        display: none;
+    }
+
+    .role-badge {
+        padding: 8px;
+        /* makes it a circle around the icon since no text */
+        border-radius: 50%;
+    }
+
+    .edit-action {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+    }
+
+    .edit-text {
+        font-size: 0.9rem;
+    }
+
+}

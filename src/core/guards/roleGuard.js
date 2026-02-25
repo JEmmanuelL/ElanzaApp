@@ -8,3 +8,4 @@ export const requireRole = (requiredRole, redirectUrl = './dashboard.html') => {
         window.location.href = redirectUrl;
     }
 };
+

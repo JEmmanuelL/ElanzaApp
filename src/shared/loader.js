@@ -9,3 +9,4 @@ export const hideLoader = (containerSelector = 'body') => {
     console.log('Hiding loader in', containerSelector);
     // Remove loader from DOM
 };
+

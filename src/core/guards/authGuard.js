@@ -17,3 +17,4 @@ export const redirectIfAuthenticated = (redirectUrl = './dashboard.html') => {
         window.location.href = redirectUrl;
     }
 };
+

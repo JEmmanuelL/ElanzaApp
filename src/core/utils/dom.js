@@ -15,3 +15,4 @@ export const createElement = (tag, className = '', textContent = '') => {
     if (textContent) el.textContent = textContent;
     return el;
 };
+

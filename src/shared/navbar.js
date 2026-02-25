@@ -5,3 +5,4 @@ export const initNavbar = () => {
     console.log('Navbar initialized');
     // Implement navbar render logic
 };
+

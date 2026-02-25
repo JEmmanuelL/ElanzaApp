@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios - Elanza</title>
+    <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/layout.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/components.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/responsive.css?v=20260224183600">
+    <link rel="manifest" href="./manifest.json?v=20260224183600">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        .servicios-body {
+            padding-bottom: 80px;
+        }
+
+        /* For bottom nav */
+        .servicios-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .welcome-name {
+            color: var(--primary-color);
+        }
+
+        .services-section {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body class="servicios-body">
+
+    <main class="servicios-container">
+        <!-- Header -->
+        <header class="dash-header">
+            <div class="dash-welcome">
+                <div class="welcome-card">
+                    <span class="welcome-text">¡Bienvenido a Servicios!</span>
+                    <h1 class="welcome-name">Usuario</h1>
+                </div>
+            </div>
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="dash-logo mobile-logo">
+        </header>
+
+        <section class="services-section">
+            <h2>Tus Servicios</h2>
+            <p>Aquí podrás ver y gestionar tus servicios contratados próximamente.</p>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/usuario.svg" alt="Usuario">
+        </a>
+        <a href="#" class="nav-item active">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Compras">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/calendario.svg" alt="Calendario">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/contratos.svg" alt="Contratos">
+        </a>
+    </nav>
+
+    <script type="module" src="./src/main.js?v=20260224183600"></script>
+</body>
+
+</html>

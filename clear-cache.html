@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiando Caché...</title>
+</head>
+
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+    <h2>Limpiando caché de la aplicación...</h2>
+    <p>Por favor, espera un momento.</p>
+    <script>
+        // 1. Unregister all service workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                    console.log('Service Worker Unregistered', registration);
+                }
+            });
+        }
+
+        // 2. Clear all Caches
+        if ('caches' in window) {
+            caches.keys().then(function (names) {
+                for (let name of names) {
+                    caches.delete(name);
+                    console.log('Cache Deleted', name);
+                }
+            });
+        }
+
+        // 3. Wait a second, then redirect to index
+        setTimeout(() => {
+            window.location.href = './index.html?v=' + new Date().getTime(); // Redirect with timestamp to ensure fresh load
+        }, 1500);
+    </script>
+</body>
+
+</html>

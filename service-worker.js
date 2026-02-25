@@ -1,26 +1,20 @@
-const CACHE_NAME = 'elanza-cache-v1';
+const CACHE_NAME = 'elanza-cache-v4';
 const ASSETS_TO_CACHE = [
   './',
   './login.html',
   './dashboard.html',
-  './appointments.html',
-  './history.html',
   './src/main.js',
-  './styles/base.css',
-  './styles/layout.css',
-  './styles/components.css',
-  './styles/responsive.css'
+  './styles/base.css'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching App Shell');
-      // Use catch() since some resources might not exist yet during local dev
+      console.log('[Service Worker] Caching App Shell v4');
       return Promise.allSettled(ASSETS_TO_CACHE.map(url => cache.add(url)));
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // Force the waiting service worker to become the active service worker.
 });
 
 self.addEventListener('activate', (event) => {
@@ -34,13 +28,20 @@ self.addEventListener('activate', (event) => {
       }));
     })
   );
-  self.clients.claim();
+  self.clients.claim(); // Claim control immediately
 });
 
+// Network-First Strategy for Development
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        // If the request is successful, return it and optionally cache it
+        return networkResponse;
+      })
+      .catch(() => {
+        // If network fails (offline), fall back to cache
+        return caches.match(event.request);
+      })
   );
 });
