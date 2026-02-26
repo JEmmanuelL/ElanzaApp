@@ -240,17 +240,23 @@ const renderUsers = (users) => {
                 <strong>${name}</strong>
                 <span>${email}</span>
             </div>
-            <div class="record-actions">
+            <div class="record-actions" style="display:flex; align-items:center; gap:20px;">
                 <div class="record-role">
                     <div class="role-badge">
                         <img src="${roleIcon}" alt="${roleName}" class="role-icon">
                         <span class="role-name">${roleName}</span>
                     </div>
                 </div>
-                <a href="./perfil.html?uid=${user.id}" class="edit-action" style="text-decoration:none; color:inherit;">
-                    <span class="edit-text">Editar</span>
-                    <img src="./assets/icons/IconApp/flecha.svg" alt="Editar" class="edit-icon">
-                </a>
+                <div style="display:flex; gap:10px;">
+                    <a href="./perfil.html?uid=${user.id}" class="edit-action" style="text-decoration:none; color:inherit; border:1px solid #ddd; border-radius:8px; padding:6px 12px; display:flex; align-items:center; gap:6px;">
+                        <span class="edit-text">Editar</span>
+                        <img src="./assets/icons/IconApp/flecha.svg" alt="Editar" class="edit-icon">
+                    </a>
+                    <a href="./asignar-ritual.html?uid=${user.id}" class="edit-action" style="text-decoration:none; background:var(--primary-color, #c19a6b); color:white; border-radius:8px; padding:6px 12px; display:flex; align-items:center; gap:6px;">
+                        <span class="edit-text" style="color:white;">Asignar Ritual</span>
+                        <img src="./assets/icons/IconApp/flecha.svg" alt="Asignar" class="edit-icon" style="filter: brightness(0) invert(1);">
+                    </a>
+                </div>
             </div>
         `;
         listContainer.appendChild(card);

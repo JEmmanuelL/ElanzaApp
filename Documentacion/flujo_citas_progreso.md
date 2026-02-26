@@ -1,154 +1,184 @@
-# Flujo de Citas e Historial Clínico (Elanza)
+# Flujo de Citas, Compras e Historial Clínico (Elanza)
 
-Este documento describe detalladamente el flujo funcional y la arquitectura necesaria para implementar la agendación de citas, validación de reglas de negocio, y el registro de progreso clínico con fotografías para la plataforma **Elanza**.
+Este documento describe detalladamente el flujo funcional y la arquitectura necesaria para implementar la agendación de citas, validación de reglas de negocio, registro de compras y el progreso clínico con fotografías para la plataforma **Elanza**.
 
-## 1. Diagrama de Flujo Principal (User & Admin)
+## 1. Arquitectura de Colecciones Inicial y Nueva Propuesta
 
-El siguiente diagrama ilustra el camino completo desde que el usuario busca un servicio hasta que el administrador registra su progreso.
+Basado en el nuevo flujo donde los usuarios adquieren citas (individuales o por paquetes) directamente en la clínica con un Super Administrador, la arquitectura ideal requeriría una **nueva colección** para manejar estas compras/créditos de servicios.
+
+### Colecciones Existentes:
+- **`users`**: Perfil general del usuario.
+- **`services`**: Catálogo completo de servicios disponibles en la clínica.
+- **`doctors`**: Relación usuario → doctor + metadata clínica.
+- **`doctorSchedules`**: Horarios base semanales.
+- **`appointmentSlots`**: Slots generados (disponibilidad real).
+- **`appointments`**: Citas agendadas confirmadas.
+- **`treatmentRecords`**: Historial clínico / notas y fotos del progreso de citas finalizadas.
+
+### 🆕 Nueva Colección Sugerida: `userPackages` (o `purchasedServices`)
+Para soportar el registro de los pagos y asignar un "saldo de citas" al usuario.
+- **Por qué crearla:** Si añadimos los pagos directo a un arreglo en `users`, el documento del usuario se volvería pesado con el tiempo y limitaría el historial de pagos. Es mejor tener un registro centralizado de compras.
+- **Estructura sugerida:**
+```json
+// Colección userPackages
+{
+  "userId": "auth_uid",
+  "serviceId": "drenaje_linfatico", // o ID del Paquete
+  "totalAppointments": 10,           // Cantidad de citas compradas
+  "usedAppointments": 0,             // Citas agendadas/usadas
+  "payment": {
+    "amount": 1500,                  // Monto pagado
+    "method": "tarjeta",             // "efectivo" o "tarjeta"
+    "cardType": "credito",           // "credito", "debito" (solo si method="tarjeta")
+    "receiptFolio": "IID-987654"     // Folio de la terminal física (solo si method="tarjeta")
+  },
+  "purchasedAt": "2024-03-01T10:00:00Z",
+  "purchasedByAdmin": "admin_uid"    // El Super Administrador en recepción que registró el pago
+}
+```
+*En la colección `appointments` se añadiría el campo `userPackageId` para vincular qué cita consumió qué compra, y acceder a los datos de pago al mostrar el historial del usuario.*
+
+---
+
+## 2. Diagrama de Flujo Principal (Admin de Recepción, Usuario, Médico)
+
+El siguiente diagrama ilustra el nuevo camino: El usuario llega a recepción, el Admin registra el pago/paquete, el Usuario luego programa sus citas usando la app con sus créditos, y finalmente el Médico registra su progreso.
 
 ```mermaid
 sequenceDiagram
     actor Usuario
+    participant Recepción (Super Admin)
     participant Interfaz (Frontend)
     participant Firestore (BD)
     participant Storage (Archivos)
-    actor Admin (Doctor)
+    actor Médico (Doctor/Admin)
 
-    %% Registro y Selección de Servicio
-    Usuario->>Interfaz: Inicia sesión / Se registra
-    Usuario->>Interfaz: Entra al Catálogo de 'Servicios'
-    Interfaz-->>Usuario: Muestra tarjetas de servicios con iconos (Carga desde Firestore)
-    Usuario->>Interfaz: Clic en 'Agendar' en un servicio específico
+    %% 1. Registro y Compra en Recepción
+    Usuario->>Recepción (Super Admin): Solicita servicio/paquete presencialmente
+    Recepción (Super Admin)->>Interfaz: Registra al usuario en la BD (si es nuevo)
+    Recepción (Super Admin)->>Interfaz: Asigna la compra (Servicio Drenaje Linfático x10 sesiones)
+    Interfaz->>Recepción (Super Admin): Solicita método de pago, monto y detalles (Efectivo / Tarjeta + Folio)
+    Recepción (Super Admin)->>Interfaz: Confirma los datos de pago
+    Interfaz->>Firestore: Crea/Actualiza perfil en 'users'
+    Interfaz->>Firestore: 🆕 Crea documento en colección 'userPackages' con saldo y pago
+    Firestore-->>Interfaz: Asignación y compra exitosa
 
-    %% Visualización de Disponibilidad
-    Interfaz->>Firestore: 1. Lee DoctorSchedules (Horarios base del doctor para la semana)
-    Interfaz->>Firestore: 2. Lee Appointments (Citas ya ocupadas en esa semana)
+    %% 2. Agendamiento por parte del Usuario
+    Usuario->>Interfaz: Inicia sesión en su App
+    Usuario->>Interfaz: Entra a su sección "Mis Tratamientos/Paquetes"
+    Interfaz->>Firestore: Consulta documentos vigentes en 'userPackages'
+    Firestore-->>Interfaz: Retorna paquetes con citas disponibles (créditos > 0)
+    Usuario->>Interfaz: Selecciona Paquete y hace clic en 'Agendar Cita'
+    
+    Interfaz->>Firestore: Consulta DoctorSchedules (Horarios base) y Appointments (Citas ocupadas)
     Firestore-->>Interfaz: Devuelve datos combinados
-    Interfaz-->>Usuario: Muestra Calendario Semanal interactivo con turnos libres
-
-    %% Selección y Validación
+    Interfaz-->>Usuario: Muestra Calendario Semanal de disponibilidad
+    
     Usuario->>Interfaz: Selecciona Fecha y Hora
-    Interfaz->>Interfaz: Valida Localmente: Reglas (maxPerDay, incompatibleServices)
+    Interfaz->>Interfaz: Valida internamente y Muestra Confirmación
+    Usuario->>Interfaz: Confirma Cita
+    Interfaz->>Firestore: Ejecuta Cloud Function (descuenta 1 sesión del 'userPackage')
+    Firestore-->>Interfaz: Confirma creación de Cita
+    Interfaz-->>Usuario: Redirige a Pantalla de Confirmación de Cita 
+
+    %% 3. Atención y Progreso
+    Note over Usuario, Médico: --- El día de la Cita ---
+    Usuario->>Médico (Doctor/Admin): Asiste a su consulta médica
     
-    alt Si las reglas locales pasan
-        Interfaz-->>Usuario: Muestra Formulario Médico Específico (Consentimiento)
-        Usuario->>Interfaz: Llena y Acepta el Formulario
-        Interfaz->>Firestore: Petición a Cloud Functions (createAppointment)
-        Firestore-->>Interfaz: Confirma Crecación Segura
-        Interfaz-->>Usuario: Redirige a Pantalla de Confirmación
-    else Si las reglas fallan
-        Interfaz-->>Usuario: Muestra Alerta con el motivo (Ej: "Tratamiento incompatible hoy")
+    Médico (Doctor/Admin)->>Interfaz: Entra al Dashboard y busca Cita del día
+    Interfaz->>Firestore: Localiza Cita Agendada en 'appointments'
+    Médico (Doctor/Admin)->>Interfaz: Selecciona paciente y da clic en "Registrar Progreso"
+    
+    opt Toma de Fotos y Notas Clínicas
+        Médico (Doctor/Admin)->>Interfaz: Sube Fotos (Antes/Después) y Notas de evolución
+        Interfaz->>Storage: Sube fotos a un volumen privado
+        Storage-->>Interfaz: Retorna URLs 
+        Interfaz->>Firestore: Crea Doc en 'treatmentRecords' referenciando la cita
     end
 
-    %% Pantalla de Confirmación
-    Interfaz-->>Usuario: Muestra Detalles: Fotos públicas, recomendaciones, cuidados post-tratamiento.
-
-    %% Día de la Cita real
-    Note over Usuario, Admin: --- El día de la Cita ---
-    Usuario->>Admin (Doctor): Asiste a la Clínica
-
-    %% Registro de Progreso (Admin Flow)
-    Admin (Doctor)->>Interfaz: Entra a su Dashboard y busca Usuario por Correo
-    Interfaz->>Firestore: Localiza Cita Agendada
-    Admin (Doctor)->>Interfaz: Pregunta "Desea registrar progreso por foto?"
-    
-    opt Si el paciente acepta
-        Admin (Doctor)->>Interfaz: Sube Fotos (Antes/Después) y Notas
-        Interfaz->>Storage: Sube y comprime fotos (patient-progress/...)
-        Storage-->>Interfaz: Retorna URLs de Storage
-        Interfaz->>Firestore: Crea Documento en 'treatmentRecords' con Notas y URLs
-    end
-
-    %% Visualización de Historial
+    %% 4. Historial del Paciente
     Usuario->>Interfaz: Entra a sección "Historial de Citas"
-    Interfaz->>Firestore: Consulta citas anteriores y futuras
-    Interfaz->>Firestore: Consulta 'treatmentRecords'
+    Interfaz->>Firestore: Consulta citas anteriores y 'treatmentRecords' e info de pago ('userPackages')
     Firestore-->>Interfaz: Retorna datos
-    Interfaz-->>Usuario: Muestra Fotos de progreso y notas del Doc
-    Interfaz-->>Usuario: Muestra "Próxima Cita Agendada" (Si existe)
+    Interfaz-->>Usuario: Muestra Fotos de progreso y notas del Médico
+    Interfaz-->>Usuario: Muestra Detalles de Pago: Monto Pagado, Método (Ej. Tarjeta Débito Folio: IID-XXXXX)
 ```
 
 ---
 
-## 2. Descripción Paso a Paso del Flujo (Frontend Context)
+## 3. Descripción Paso a Paso del Flujo (Contexto Frontend/Backend)
 
-Esto sirve como directiva para los programadores de Frontend y Backend.
+### Paso A: Recepción y Creación del Paquete (Perfil de Super Administrador)
+- **Acción:** Un usuario físico acude a clínica.
+- **Proceso Administrativo:** En el Panel Web para Super Administradores, el Super Admin registra un alta de pagos para el usuario.
+  1. Si es pago en **Efectivo**: Solo se registra monto total cobrado en caja.
+  2. Si es pago con **Tarjeta**: Se registra monto, tipo de tarjeta (Crédito/Débito) y el ID/Folio emitido por la terminal bancaria externa de la clínica.
+- **Backend:** Se inserta un documento nuevo en la colección `userPackages`. A partir de ese momento, el usuario, al loguearse en la app, tiene "X créditos" disponibles para el servicio.
 
-### Paso A: Exploración de Servicios
-- **Vista:** `/servicios`
-- **Acción:** Se cargan los documentos de la colección `services`. Cada servicio tiene nombre, precio, duración y el campo nuevo `images.icon` (subido por el superadmin).
-- **Trigger:** Al hacer clic en el botón de agendar de una tarjeta, la app navega a `/agendar?serviceId=ID_DEL_SERVICIO`.
+### Paso B: Usuario Agenda con sus Créditos (App Cliente)
+- **Restricción:** Ya no hay un catálogo suelto que el usuario pueda usar para agendar directamente sin pagar.
+- **Vista:** En su lugar, el usuario principal ve en su perfil una pantalla de "Mis Paquetes/Tratamientos", alimentada por `userPackages` en donde `usedAppointments < totalAppointments`.
+- **Acción:** Al seleccionar uno y decir "Agendar", se inicia el flujo del calendario (Paso C).
+- **Flujo Freno:** Si el usuario no tiene citas disponibles, la plataforma le muestra un banner: "Contacta a recepción u acude a la clínica para agendar o renovar servicios".
 
-### Paso B: Selección de Horario (El Calendario)
-- **Vista:** Modal o Pestaña de Calendario Semanal
+### Paso C: Selección de Horario (El Calendario)
+- **Vista:** Modal o Pestaña de Calendario Semanal.
 - **Lógica Frontend (getAvailableSlots):**
-  1. Se consulta el documento del doctor asignado en la colección `doctorSchedules`. El formato del horario lo sube el doctor semanalmente (ej. Lunes: `["09:00", "10:00", "11:00"]`).
-  2. Se consultan de la colección `appointments` todas las citas en estado `scheduled` para esa semana.
-  3. El frontend calcula y tacha/desactiva los horarios (slots) que ya estén cruzados con una cita existente o que queden en el pasado.
-  4. Si hay horarios disponibles, el usuario selecciona uno.
+  1. Se consulta el documento de los doctores asignados a ese servicio (`doctorSchedules`).
+  2. Se verifica qué citas hay cruzadas con el horario actual de esta semana consultando `appointments`.
+  3. Se tachán espacios rotos o ya expirados/ocupados.
+  4. El usuario elige la hora y confirma. La Cloud Function `createAppointment` procesa la cita.
+  5. **Importante:** Al crear la cita se le pasa el ID del paquete elegido (`userPackageId`). La Cloud Function valida internamente y aumenta en +1 el campo `usedAppointments` (o decrementa el total) para consumir uno de los créditos del paciente bajo seguridad de transacciones.
 
-### Paso C: Validaciones y Consentimiento
-- **Acción:** Al seleccionar el horario y dar "Continuar".
-- **Lógica Pre-Vuelo:** El frontend ejecuta validaciones contra el documento del servicio:
-  - ¿Alcanzó el `bookingRules.maxPerWeek`?
-  - ¿Trata de agendar algo en un mismo día incluido en `incompatibleSameDayServices`?
-- **El Formulario Médico:** Si las reglas pasan, se pinta en pantalla el arreglo `medicalFormFields` (Preguntas booleanas y textos configuradas en `update_service`).
-- **Submit:** Al aceptar el formulario, se envían los datos a Firebase Cloud Functions (`createAppointment`) para garantizar la escritura atómica.
+### D. Historial Integral del Cliente (Lo que el paciente ve de sus citas previas)
+- **Vista:** `/perfil/historial`
+- Al darle clic a "Detalles de cita previa", el paciente puede ver todo encapsulado:
+  1. **Progreso Médico (A través del Cruce con `treatmentRecords`):** Fotos antes/después del seguimiento clínico y las anotaciones realizadas.
+  2. **Trazabilidad Administrativa (A través del cruce con `userPackages`):**
+     - Almacenado como parte del rastro de compra (Ej: "Pagó $2,000 en Efectivo" ó "Pagó $2,000 con Tarjeta de Crédito, Folio: #IID-9993339").
 
-### Paso D: Pantalla de Confirmación de Cita
-- **Vista:** `/cita/confirmacion/:appointmentId`
-- **UI:** Se muestra la información estática del servicio para educar al paciente.
-  - Campos a usar: `description`, `recommendations`, `contraindications`, `aftercare`.
-  - Imágenes a usar: `images.banner` y el arreglo de `images.gallery`.
+### Restricciones Técnicas Globales
+- **Privacidad de Fotos:** Las fotos del historial deben estar en Firebase Storage con reglas strictas de lectura `read: if request.auth.uid == userId || request.auth.token.role == 'Super Administrador' || request.auth.token.role == 'Administrador'`.
+- **Limpieza (Auto-delete):** Evaluar si configuran *Lifecycle Policies* en GCS en los depósitos de `patient-progress/` por retención temporal.
 
 ---
 
-## 3. El Flujo de Administración y Progreso Médico (Dashboard Admin)
+## 4. Arquitectura Técnica, Seguridad y Costos
 
-### Paso A: Búsqueda del Paciente
-- El Doctor/Administrador entra al **Dashboard Interno**.
-- Usa una barra de búsqueda para ubicar al paciente por su **correo electrónico** o nombre.
-- El sistema busca en la colección `users` y enlista su historial de `appointments`.
+Para implementar este nuevo flujo de manera segura y económica, la división de responsabilidades recomendada es:
 
-### Paso B: Registro de Sesión (Fotos y Notas)
-- Sobre la cita del paciente del día de hoy, el doc da clic en un botón: **"Registrar Progreso (Notas/Fotos)"**.
-- Si el paciente da su consentimiento verbal, el doctor:
-  1. Escribe notas clínicas de estado o evolución de la sesión.
-  2. Selecciona/Toma fotos del **Antes** y del **Después** (si aplica).
-- El sistema sube las fotos a Firebase Storage en la ruta segura (`patient-progress/{userId}/{appointmentId}-before.webp`).
-- Y se genera el documento final en Firestore:
-
-**Colección `treatmentRecords`:**
-```json
-{
-  "userId": "jhon.doe@email.com",
-  "appointmentId": "f78d912k",
-  "serviceId": "drenaje_linfatico",
-  "doctorId": "doc_xyz",
-  "date": "2024-03-01T10:00:00Z",
-  "notes": "El paciente..." ,
-  "progressPhotos": {
-    "before": "https://...",
-    "after": "https://..."
+### A. Asignación de Paquetes en Recepción (Super Admin)
+- **Tecnología:** Frontend (Vanilla JS) + Firestore Security Rules.
+- **¿Por qué?:** Es la opción con **menor costo**. No necesitas una Cloud Function. El Super Admin en recepción usará la web app para escribir directamente en la colección `userPackages`.
+- **Regla de Seguridad (Firestore Rules):**
+  ```javascript
+  match /userPackages/{packageId} {
+    // Solo un Super Administrador puede registrar o modificar un pago/paquete
+    allow create, update, delete: if request.auth != null && request.auth.token.role == 'Super Administrador';
+    // Un usuario normal solo puede LEER sus propios paquetes
+    allow read: if request.auth != null && request.auth.uid == resource.data.userId;
   }
-}
-```
+  ```
+
+### B. Bloqueo de Agendamiento si no hay Créditos
+- **Tecnología Principal (UX):** Frontend (Vanilla JS).
+- **¿Por qué?:** Para ahorrar lecturas en base de datos.
+- **Lógica:** Al cargar el perfil, si `(totalAppointments - usedAppointments) == 0`, simplemente ocultas en Vanilla JS el botón de "Agendar" y muestras un banner de "Acude a recepción para adquirir más sesiones". 
+
+### C. Consumo de Créditos y Creación de la Cita (Agendamiento Real)
+- **Tecnología:** Backend (Firebase Cloud Functions).
+- **¿Por qué?:** Es **estrictamente necesario por seguridad**. Si usas Vanilla JS, un usuario malintencionado podría modificar el código para agendar sin descontarse el crédito.
+- **Lógica en Function (`createAppointment`):**
+  1. Recibe la petición de cita y el `userPackageId`.
+  2. Valida en servidor que `usedAppointments < totalAppointments`.
+  3. Dentro de una **Transacción atómica** de Firestore: Crea el documento en `appointments` y suma `+1` a `usedAppointments` en `userPackages`.
+- **Costo:** Firebase otorga 2 millones de invocaciones gratuitas al mes. El agendamiento es esporádico, por lo que el nivel de seguridad lo justifica completamente.
 
 ---
 
-## 4. Vista Final del Cliente (Historial de Usuario)
+## 5. Reglas Globales de Desarrollo (UI/UX)
 
-### Dashboard del Paciente (`/perfil/historial`)
-Cuando el cliente se loguea para revisar su estado, ve dos secciones primordiales en su pantalla:
-
-1. **Card Superior (Próximos Eventos):**
-   - El sistema consulta la colección `appointments` donde `userId == id_autenticado` y `startTime > hoy`.
-   - Muestra un aviso gigante: "Tu próxima cita de *Drenaje Linfático* es el Jueves a las 10:00 AM".
-
-2. **Lista Inferior (Historial Clínico / Progreso):**
-   - El sistema hace un "join" virtual buscando todos los documentos en `treatmentRecords` que le pertenecen a este usuario, ordenados desde el más reciente.
-   - Si el doctor le tomó fotos, la UI carga las fotos del *Antes y Después*, permitiéndole al usuario ver gráficamente en su teléfono cómo el servicio le ha estado ayudando, acompañado de las notas públicas del doctor.
-
-### Restricciones de Privacidad y Costos
-- **Privacidad:** Las reglas de seguridad de Storage de Firebase están configuradas explícitamente para que la ruta de almacenamiento de fotos clínicas solo pueda ser leída por el usuario que es dueño del `userId` y por el personal `Administrador / Doctor`. Nula exposición pública.
-- **Limpieza (Auto-delete):** Se debe configurar una regla "Lifecycle" en Google Cloud Storage en el bucket `patient-progress/` para expirar/borrar permanentemente los objetos tras **30 días** de haber sido creados, evitando acumular costos de retención y cumpliendo normativas de retención de imágenes temporales.
+### Prohibición de Alertas Nativas de JavaScript
+- Queda **estrictamente prohibido** utilizar las funciones nativas del navegador `alert()`, `confirm()` o `prompt()` en cualquier parte del código a partir de ahora.
+- **Razón:** Estas alertas rompen el diseño estético de la aplicación, bloquean el hilo principal y ofrecen una mala experiencia de usuario.
+- **Solución:** Todo aviso, validación, mensaje de error o confirmación de acciones destructivas (como eliminar un registro) deberá realizarse usando **Modales Personalizados HTML/CSS** que respeten el diseño, los bordes curvos y la paleta de colores de Elanza, o, en su defecto, alertas visuales "inline" (textos pequeños de error debajo de los inputs).

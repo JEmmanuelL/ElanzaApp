@@ -38,5 +38,9 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create, update: if request.auth.uid == userId || isSuperAdmin();
     }
+
+    match /userPackages/{packageId} {
+      allow read, write: if isAuthenticated();
+    }
   }
 }

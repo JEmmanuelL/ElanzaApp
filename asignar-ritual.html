@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar Ritual - Elanza</title>
+    <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/layout.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/components.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/responsive.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/dashboard.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/servicios-admin.css?v=20260225214000">
+    <link rel="stylesheet" href="./styles/asignar-ritual.css?v=20260226170500">
+    <link rel="manifest" href="./manifest.json?v=20260224183600">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="desktop-sidebar">
+        <div class="sidebar-top">
+            <div class="menu-item-container" onclick="window.location.href='./dashboard.html'" style="cursor: pointer;">
+                <img src="./assets/icons/IconApp/flecha.svg" style="transform: rotate(180deg);" alt="Regresar"
+                    class="sidebar-icon">
+                <span class="sidebar-text">Regresar</span>
+            </div>
+        </div>
+        <div class="sidebar-bottom">
+            <div class="menu-item-container">
+                <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="sidebar-icon brand-icon">
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-mobile-container ritual-container">
+        <!-- Header -->
+        <header class="dash-header">
+            <div class="dash-welcome">
+                <div class="welcome-card" id="adminWelcomeCard"
+                    style="display:flex; justify-content:space-between; align-items:center; border-radius:16px; padding:16px;">
+                    <div>
+                        <span class="welcome-text">Super Administrador</span>
+                        <h1 class="welcome-name" id="adminName" style="margin:0;">Cargando...</h1>
+                    </div>
+                    <img src="./assets/icons/IconApp/super-administrador.svg"
+                        style="width:36px; height:36px; filter: invert(86%) sepia(11%) saturate(1412%) hue-rotate(308deg) brightness(99%) contrast(92%);"
+                        alt="Admin Role">
+                </div>
+            </div>
+
+            <div class="desktop-logo-mask"></div>
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="dash-logo mobile-logo">
+        </header>
+
+        <section class="ritual-layout">
+            <!-- Left Half: User Profile Info -->
+            <div class="ritual-profile-card" id="profileCard" style="position: relative;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px; position:relative;">
+                    <div id="profileInitial"
+                        style="width:60px; height:60px; border-radius:50%; background:var(--primary-color, #c8a272); color:white; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:bold;">
+                    </div>
+                    <div>
+                        <h2 id="profileFullName" style="margin:0; font-size:1.6rem; color:var(--text-color);">
+                            Cargando...</h2>
+                    </div>
+                    <img id="roleIconHeader" src="./assets/icons/IconApp/sin-verificar.svg" alt="Rol"
+                        style="width: 32px; height: 32px; margin-left:auto;">
+                </div>
+
+                <form id="userProfileForm" class="profile-form">
+
+                    <div class="form-group">
+                        <label>Nombre(s)</label>
+                        <input type="text" id="nombreInput" required>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Apellido Paterno</label>
+                        <input type="text" id="apPaternoInput">
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Apellido Materno</label>
+                        <input type="text" id="apMaternoInput">
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            Correo Electrónico
+                            <img id="providerIconMini" src="./assets/icons/iconMarca.svg" alt="Provider"
+                                style="width: 16px; height: 16px;">
+                        </label>
+                        <input type="email" id="emailInput" required>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Teléfono</label>
+                        <input type="tel" id="telefonoInput" required>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Rol</label>
+                        <input type="text" id="rolInput" disabled style="background:#f5f5f5;">
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Género</label>
+                        <select id="generoInput">
+                            <option value="Femenino">Femenino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Otro">Otro</option>
+                            <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacInput">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Guardar
+                        Cambios</button>
+                </form>
+            </div>
+
+            <!-- Right Half: Ritual Builder -->
+            <div class="ritual-builder-section">
+                <button id="btnArmarRitual" class="btn-armar-ritual">
+                    <img src="./assets/icons/IconApp/templo.svg" alt="Templo">
+                    <span>Armemos todo tu Ritual</span>
+                </button>
+
+                <!-- Stacked Services Container -->
+                <div id="selectedServicesStack" class="services-stack">
+                    <!-- Cards will be appended here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Select Services -->
+    <div id="modalSelectServices" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2 class="modal-title">¿Qué servicio desea agregar a este usuario?</h2>
+                <div class="services-grid" id="servicesGridModal">
+                    <!-- Services will be loaded here -->
+                    <p>Cargando servicios...</p>
+                </div>
+            </div>
+            <div class="modal-actions"
+                style="margin-top:20px; text-align:right; border-top:1px solid #eee; padding-top:16px;">
+                <button id="btnCancelServices" class="btn"
+                    style="background:var(--color-bg); border:1px solid #ddd; margin-right:10px;">Cancelar</button>
+                <button id="btnConfirmServices" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Resumen Ritual -->
+    <div id="modalResumenRitual" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h2 class="modal-title">Resumen de tu Ritual</h2>
+            <div id="resumenLista" class="resumen-lista">
+                <!-- Filled dynamically -->
+            </div>
+            <div class="resumen-total">
+                <strong>Total a Pagar:</strong>
+                <span id="resumenTotalAmount">$0.00</span>
+            </div>
+
+            <div class="forma-pago-section">
+                <label style="font-weight:bold; margin-bottom: 8px; display:block;">Forma de pago</label>
+                <select id="formaPagoSelect" class="form-select"
+                    style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-bottom: 15px;">
+                    <option value="">Seleccione una forma de pago...</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Tarjeta de Credito">Tarjeta de Crédito</option>
+                    <option value="Tarjeta de Debito">Tarjeta de Débito</option>
+                </select>
+
+                <div id="extraPagoInfo" style="display:none; margin-bottom: 15px;">
+                    <label id="extraPagoLabel"
+                        style="font-weight:bold; margin-bottom: 8px; display:block;">ID/Folio</label>
+                    <input type="text" id="extraPagoInput"
+                        style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;"
+                        placeholder="Ingrese el folio o rastreo">
+                </div>
+            </div>
+
+            <div class="modal-actions"
+                style="margin-top:24px; display:flex; flex-direction:column; gap:12px; width: 100%;">
+                <button id="btnPagarRitual" class="btn btn-primary"
+                    style="font-size: 1rem; padding: 12px; width: 100%; border-radius: 8px;" disabled>Pagar y
+                    Asignar</button>
+                <button id="btnEditarRitual" class="btn"
+                    style="background:var(--color-bg); border:1px solid #ddd; color:var(--text-color); font-size: 1rem; padding: 12px; width: 100%; border-radius: 8px;">Editar
+                    mi
+                    ritual</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="bottom-nav">
+        <a href="./dashboard.html" class="nav-item">
+            <img src="./assets/icons/IconApp/usuario.svg" alt="Usuario">
+        </a>
+        <a href="#" class="nav-item active">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Compras">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/calendario.svg" alt="Calendario">
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./assets/icons/IconApp/contratos.svg" alt="Contratos">
+        </a>
+    </nav>
+
+    <!-- Generic Modals for Native Alert Replacement -->
+    <div id="customAlertModal" class="modal-overlay" style="display: none; z-index: 10000;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px;">
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza" style="width:48px; margin-bottom:16px;">
+            <h3 id="customAlertMessage"
+                style="margin-bottom: 24px; font-size: 1.1rem; color: var(--text-color); font-weight: 500;"></h3>
+            <button id="btnCustomAlertOk" class="btn btn-primary" style="width: 100%;">Entendido</button>
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal-overlay" style="display: none; z-index: 10000;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px;">
+            <img src="./assets/icons/IconApp/adminsitrador.svg" alt="Confirmar" style="width:48px; margin-bottom:16px;">
+            <h3 id="customConfirmMessage"
+                style="margin-bottom: 24px; font-size: 1.1rem; color: var(--text-color); font-weight: 500;"></h3>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="btnCustomConfirmCancel" class="btn"
+                    style="background:#f5f5f5; border:1px solid #ddd; flex:1; color:#333;">Cancelar</button>
+                <button id="btnCustomConfirmOk" class="btn btn-danger"
+                    style="background:#ef4444; color:white; border:none; flex:1;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/modules/ritual/index.js?v=20260226171500"></script>
+</body>
+
+</html>

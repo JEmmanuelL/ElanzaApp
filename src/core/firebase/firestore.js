@@ -10,7 +10,8 @@ import {
     orderBy,
     limit,
     startAfter,
-    serverTimestamp
+    serverTimestamp,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getFirebaseDb } from "./config.js";
 
@@ -34,6 +35,13 @@ export const setDocument = async (collectionName, id, data) => {
     const docRef = doc(db, collectionName, id);
     await setDoc(docRef, data, { merge: true });
     return { id, ...data };
+};
+
+export const addDocument = async (collectionName, data) => {
+    const db = getFirebaseDb();
+    const collRef = collection(db, collectionName);
+    const docRef = await addDoc(collRef, data);
+    return { id: docRef.id, ...data };
 };
 
 export const updateDocument = async (collectionName, id, data) => {
