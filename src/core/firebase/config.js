@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFunctions } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -16,6 +18,8 @@ const firebaseConfig = {
 let app;
 let auth;
 let db;
+let functions;
+let storage;
 let googleProvider;
 let facebookProvider;
 
@@ -24,16 +28,19 @@ export const initFirebase = () => {
         app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app, "elanza");
+        functions = getFunctions(app);
+        storage = getStorage(app);
         googleProvider = new GoogleAuthProvider();
         facebookProvider = new FacebookAuthProvider();
-        console.log('[Firebase] Initialized successfully with Firestore');
+        console.log('[Firebase] Initialized successfully with Firestore, Functions AND Storage');
     }
-    return { app, auth, db, googleProvider, facebookProvider };
+    return { app, auth, db, functions, storage, googleProvider, facebookProvider };
 };
 
 export const getFirebaseApp = () => app;
 export const getFirebaseAuth = () => auth;
 export const getFirebaseDb = () => db;
+export const getFirebaseFunctions = () => functions;
+export const getFirebaseStorage = () => storage;
 export const getGoogleProvider = () => googleProvider;
 export const getFacebookProvider = () => facebookProvider;
-

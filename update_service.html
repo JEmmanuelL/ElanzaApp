@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Images Schema Firestore</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 2rem;
+            background: #f9f9f9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .success {
+            color: #059669;
+            font-weight: bold;
+            padding: 0.5rem;
+            background: #d1fae5;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+            padding: 0.5rem;
+            background: #fee2e2;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        #log {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Agregando Images Schema a Servicios</h1>
+    <p style="text-align: center;">Haz clic en el botón para iniciar sesión e inicializar el campo vacío de imágenes
+        para todos los servicios.</p>
+
+    <button id="startBtn">Iniciar Sesión y Actualizar</button>
+    <div id="status" style="text-align: center; font-weight: bold; margin-bottom: 20px;"></div>
+
+    <div id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgH57y-PtZILDnVO30COVNhtmSnlidc8M",
+            authDomain: "elanza-91a64.firebaseapp.com",
+            projectId: "elanza-91a64",
+            storageBucket: "elanza-91a64.firebasestorage.app",
+            messagingSenderId: "1081115909115",
+            appId: "1:1081115909115:web:765a62134b82ac7565895e",
+            measurementId: "G-NE3D8KY2EH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app, "elanza");
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const serviceIds = [
+            "diamond_roll_studio",
+            "drenaje_linfatico",
+            "fibrosis_localizada",
+            "led_therapy",
+            "limpieza_diamantada",
+            "ondas_de_choque",
+            "ozono_restore",
+            "radiofrecuencia_corporal",
+            "radiofrecuencia_facial",
+            "sculpting_facial"
+        ];
+
+        const newData = {
+            images: {
+                icon: "",
+                main: "",
+                banner: "",
+                gallery: []
+            }
+        };
+
+        function logMessage(msg, isError = false, id = null) {
+            const logDiv = document.getElementById('log');
+            const newDiv = document.createElement('div');
+            newDiv.className = 'item';
+
+            if (id) {
+                newDiv.innerHTML = `<strong>[${id}]</strong>: <span class="${isError ? 'error' : 'success'}">${msg}</span>`;
+            } else {
+                newDiv.innerHTML = `<span class="${isError ? 'error' : 'success'}" style="display:block; text-align:center;">${msg}</span>`;
+            }
+            logDiv.appendChild(newDiv);
+        }
+
+        async function uploadAll() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = "Actualizando documentos...";
+            statusDiv.style.color = "black";
+
+            let successCount = 0;
+
+            for (const id of serviceIds) {
+                try {
+                    const docRef = doc(db, "services", id);
+                    await setDoc(docRef, newData, { merge: true });
+                    logMessage("✅ Image schema agregado", false, id);
+                    successCount++;
+                } catch (error) {
+                    console.error("Error con " + id, error);
+                    logMessage(`❌ Error: ${error.message}`, true, id);
+                }
+            }
+
+            if (successCount === serviceIds.length) {
+                statusDiv.innerHTML = `🎉 ¡Éxito! Se actualizaron los ${successCount} documentos.`;
+                statusDiv.style.color = "#059669";
+            } else {
+                statusDiv.innerHTML = `⚠️ Se completaron ${successCount} de ${serviceIds.length}. Revisa los errores abajo.`;
+                statusDiv.style.color = "#dc2626";
+            }
+        }
+
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            document.getElementById('log').innerHTML = '';
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('startBtn');
+
+            try {
+                statusDiv.innerHTML = "Iniciando sesión...";
+                await signInWithPopup(auth, provider);
+                btn.style.display = 'none';
+                logMessage("Sesión iniciada correctamente.", false);
+                await uploadAll();
+            } catch (error) {
+                logMessage("Error al iniciar sesión: " + error.message, true);
+            }
+        });
+    </script>
+</body>
+
+</html>

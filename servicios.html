@@ -7,61 +7,94 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicios - Elanza</title>
+    <title>Servicios Admin - Elanza</title>
     <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
     <link rel="stylesheet" href="./styles/layout.css?v=20260224183600">
     <link rel="stylesheet" href="./styles/components.css?v=20260224183600">
     <link rel="stylesheet" href="./styles/responsive.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/dashboard.css?v=20260224183600">
+    <link rel="stylesheet" href="./styles/servicios-admin.css?v=20260225214000">
     <link rel="manifest" href="./manifest.json?v=20260224183600">
     <meta name="theme-color" content="#ffffff">
-    <style>
-        .servicios-body {
-            padding-bottom: 80px;
-        }
-
-        /* For bottom nav */
-        .servicios-container {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .welcome-name {
-            color: var(--primary-color);
-        }
-
-        .services-section {
-            margin-top: 2rem;
-        }
-    </style>
 </head>
 
-<body class="servicios-body">
+<body class="dashboard-body">
 
-    <main class="servicios-container">
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="desktop-sidebar">
+        <div class="sidebar-top">
+            <div class="menu-item-container">
+                <img src="./assets/icons/IconApp/menu-hamburguesa.svg" alt="Menu" class="sidebar-icon">
+                <span class="sidebar-text">Menú</span>
+            </div>
+            <!-- More menu items could go here later -->
+        </div>
+        <div class="sidebar-bottom">
+            <div class="menu-item-container">
+                <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="sidebar-icon brand-icon">
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-mobile-container">
         <!-- Header -->
         <header class="dash-header">
             <div class="dash-welcome">
                 <div class="welcome-card">
-                    <span class="welcome-text">¡Bienvenido a Servicios!</span>
-                    <h1 class="welcome-name">Usuario</h1>
+                    <span class="welcome-text">¡Bienvenido!</span>
+                    <h1 class="welcome-name" id="welcomeNameText">Cargando...</h1>
                 </div>
             </div>
+
+            <div class="desktop-logo-mask"></div>
             <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="dash-logo mobile-logo">
         </header>
 
-        <section class="services-section">
-            <h2>Tus Servicios</h2>
-            <p>Aquí podrás ver y gestionar tus servicios contratados próximamente.</p>
+        <!-- Services Title area -->
+        <section class="services-title-area">
+            <div>
+                <span class="temple-subtitle">
+                    <img src="./assets/icons/IconApp/templo.svg" class="temple-icon-img" alt="Templo">
+                    Mi Templo
+                </span>
+                <h2 class="services-main-title">Servicios Disponibles</h2>
+            </div>
+            <button id="addServiceBtn" class="btn btn-add-service">
+                <img src="./assets/icons/IconApp/sumar.svg" alt="+" style="width: 16px; filter: invert(1);">
+                Agregar Servicio
+            </button>
+        </section>
+
+        <!-- Actions and Category Filters -->
+        <section class="dash-actions services-actions">
+            <!-- Dynamically populated category pills -->
+            <div class="mobile-filter-label">Filtros:</div>
+            <div class="category-filters" id="categoryFilters">
+                <button class="filter-pill active" data-category="all">Todos</button>
+                <div class="skeleton-pill"></div>
+                <div class="skeleton-pill"></div>
+            </div>
+        </section>
+
+        <!-- Services Grid -->
+        <section class="dash-records">
+            <div class="services-grid" id="servicesGrid">
+                <!-- Dynamically populated by Javascript -->
+                <!-- Example Skeleton -->
+                <div class="service-card skeleton"></div>
+                <div class="service-card skeleton"></div>
+                <div class="service-card skeleton"></div>
+            </div>
         </section>
     </main>
 
     <!-- Bottom Navigation Bar (Mobile Only) -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item">
+        <a href="dashboard.html" class="nav-item">
             <img src="./assets/icons/IconApp/usuario.svg" alt="Usuario">
         </a>
-        <a href="#" class="nav-item active">
-            <img src="./assets/icons/IconApp/compras.svg" alt="Compras">
+        <a href="servicios.html" class="nav-item active">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Servicios">
         </a>
         <a href="#" class="nav-item">
             <img src="./assets/icons/IconApp/calendario.svg" alt="Calendario">
@@ -71,7 +104,213 @@
         </a>
     </nav>
 
-    <script type="module" src="./src/main.js?v=20260224183600"></script>
+    <!-- Modal to Create/Edit Service -->
+    <div id="serviceModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="service-modal modal-content large-modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Agregar Servicio</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs Navigation -->
+                <div class="modal-tabs">
+                    <button class="tab-btn active" data-tab="tab-basic">1. Básica</button>
+                    <button class="tab-btn" data-tab="tab-images">2. Imágenes</button>
+                    <button class="tab-btn" data-tab="tab-texts">3. Textos</button>
+                    <button class="tab-btn" data-tab="tab-rules">4. Reglas</button>
+                    <button class="tab-btn" data-tab="tab-medical">5. Médico & Otros</button>
+                </div>
+
+                <form id="serviceForm">
+                    <input type="hidden" id="serviceId">
+
+                    <!-- TAB 1: Información Básica -->
+                    <div class="tab-content active" id="tab-basic">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Nombre del Servicio / Categoría</label>
+                                <input type="text" id="serviceName" required>
+                            </div>
+                            <div class="input-group">
+                                <label>¿Es una categoría padre?</label>
+                                <select id="isCategory">
+                                    <option value="false">No, es un servicio final</option>
+                                    <option value="true">Sí, es una categoría contenedora</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Categoría Padre</label>
+                                <select id="parentServiceId">
+                                    <option value="">Ninguna (Es raíz)</option>
+                                    <!-- Filled dynamically -->
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Duración (Minutos)</label>
+                                <input type="number" id="durationMinutes" value="60">
+                            </div>
+                            <div class="input-group">
+                                <label>Capacidad Simultánea</label>
+                                <input type="number" id="capacity" value="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Orden de Visualización</label>
+                                <input type="number" id="order" value="1">
+                            </div>
+                            <div class="input-group"
+                                style="display:flex; align-items:center; gap:10px; margin-top: 15px;">
+                                <input type="checkbox" id="active" checked>
+                                <label for="active" style="margin:0;">Servicio Activo / Visible</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Imágenes -->
+                    <div class="tab-content" id="tab-images">
+                        <p class="section-desc">Las imágenes se subirán automáticamente al seleccionar un archivo.</p>
+
+                        <div class="form-grid">
+                            <div class="image-upload-box">
+                                <label>Imagen Principal (Fondo Tarjeta)</label>
+                                <input type="file" id="imgMainInput" accept="image/*">
+                                <div class="img-preview" id="imgMainPreview">Sin imagen</div>
+                            </div>
+                            <div class="image-upload-box">
+                                <label>Icono (SVG/PNG limpio)</label>
+                                <input type="file" id="imgIconInput" accept="image/*">
+                                <div class="img-preview" id="imgIconPreview">Sin icono</div>
+                            </div>
+                            <div class="image-upload-box">
+                                <label>Banner (Cabecera interna)</label>
+                                <input type="file" id="imgBannerInput" accept="image/*">
+                                <div class="img-preview" id="imgBannerPreview">Sin banner</div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-section" style="margin-top: 20px;">
+                            <label style="font-weight: bold; display: block; margin-bottom: 10px;">Galería (Máx 6
+                                imágenes)</label>
+                            <input type="file" id="imgGalleryInput" accept="image/*" multiple
+                                style="margin-bottom: 15px;">
+                            <div class="gallery-grid" id="galleryPreviewGrid">
+                                <!-- Previews go here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Textos (Arrays and Strings) -->
+                    <div class="tab-content" id="tab-texts">
+                        <div class="input-group">
+                            <label>Descripción General</label>
+                            <textarea id="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="array-group">
+                            <label>Beneficios <button type="button" class="btn-micro" id="addBenefit">+</button></label>
+                            <div id="benefitsList" class="array-list"></div>
+                        </div>
+
+                        <div class="array-group">
+                            <label>Recomendaciones (Previas) <button type="button" class="btn-micro"
+                                    id="addRecommendation">+</button></label>
+                            <div id="recommendationsList" class="array-list"></div>
+                        </div>
+
+                        <div class="array-group">
+                            <label>Cuidados Posteriores (Aftercare) <button type="button" class="btn-micro"
+                                    id="addAftercare">+</button></label>
+                            <div id="aftercareList" class="array-list"></div>
+                        </div>
+
+                        <div class="array-group">
+                            <label>Contraindicaciones <button type="button" class="btn-micro"
+                                    id="addContraindication">+</button></label>
+                            <div id="contraindicationsList" class="array-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Reglas (Booking & Cancellation) -->
+                    <div class="tab-content" id="tab-rules">
+                        <h3 class="section-title">Reglas de Agendamiento</h3>
+                        <div class="form-grid">
+                            <div class="input-group"><label>Máximo por Día</label><input type="number" id="brMaxDaily"
+                                    value="1"></div>
+                            <div class="input-group"><label>Máximo por Semana</label><input type="number"
+                                    id="brMaxWeekly" value="2"></div>
+                            <div class="input-group"><label>Máximo por Mes</label><input type="number" id="brMaxMonthly"
+                                    value="6"></div>
+                            <div class="input-group"><label>Horas Mínimas de Anticipación para reservar</label><input
+                                    type="number" id="brMinHours" value="12"></div>
+                            <div class="input-group"><label>Días mínimos de descanso entre sesiones</label><input
+                                    type="number" id="brMinDaysBetween" value="2"></div>
+                            <div class="input-group"><label>Máximo de citas futuras activas simultáneas</label><input
+                                    type="number" id="brMaxFuture" value="3"></div>
+                        </div>
+
+                        <h3 class="section-title" style="margin-top: 20px;">Política de Cancelación</h3>
+                        <div class="form-grid">
+                            <div class="input-group" style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="allowCancel" checked>
+                                <label for="allowCancel" style="margin:0;">Permite Cancelación</label>
+                            </div>
+                            <div class="input-group" style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="allowReschedule">
+                                <label for="allowReschedule" style="margin:0;">Permite Reagendar</label>
+                            </div>
+                            <div class="input-group">
+                                <label>Horas mínimas previas para cancelar/reagendar</label>
+                                <input type="number" id="cancelMinHours" value="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: Médico e Incompatibilidades -->
+                    <div class="tab-content" id="tab-medical">
+                        <div class="form-grid">
+                            <div class="input-group card-checkbox">
+                                <input type="checkbox" id="requiresDoctor">
+                                <label for="requiresDoctor">¿Requiere ser atendido estrictamente por un Doctor
+                                    Médico?</label>
+                            </div>
+                            <div class="input-group card-checkbox">
+                                <input type="checkbox" id="requiresConsent" checked>
+                                <label for="requiresConsent">¿Requiere Firma/Check de Consentimiento Médico
+                                    Informado?</label>
+                            </div>
+                            <div class="input-group card-checkbox">
+                                <input type="checkbox" id="requiresMedForm" checked>
+                                <label for="requiresMedForm">¿Requiere Formulario Médico de Salud (Trombosis, Cáncer,
+                                    etc)?</label>
+                            </div>
+                        </div>
+
+                        <div class="array-group" id="medicalQuestionsGroup" style="display:none; margin-top:20px;">
+                            <label>Preguntas del Formulario Médico <button type="button" class="btn-micro"
+                                    id="addMedicalQuestion">+</button></label>
+                            <p class="section-desc">Escribe las preguntas de salud que el paciente debe responder con
+                                Sí/No antes de agendar este servicio.</p>
+                            <div id="medicalQuestionsList" class="array-list"></div>
+                        </div>
+
+                        <h3 class="section-title" style="margin-top: 25px;">Servicios Incompatibles el mismo día</h3>
+                        <p class="section-desc">Selecciona los servicios que un paciente NO puede realizarse el mismo
+                            día que este.</p>
+                        <div class="incompatibilities-grid" id="incompatibilitiesList">
+                            <!-- Checkboxes injected by JS -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div id="modalStatusMsg" style="flex:1; color:#059669; font-weight:500;"></div>
+                <button class="btn btn-secondary" id="cancelModalBtn">Cerrar</button>
+                <button class="btn btn-primary" id="saveServiceBtn">Guardar Servicio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- We will use a separate JS entrypoint specifically for this view to keep it clean -->
+    <script type="module" src="./src/modules/servicios/admin-servicios.js?v=20260225221000"></script>
 </body>
 
 </html>

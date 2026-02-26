@@ -467,10 +467,13 @@
         height: 52px;
         width: 52px;
         margin-left: auto;
+        /* #B09C64 Color Filter */
+        filter: invert(72%) sepia(13%) saturate(1450%) hue-rotate(9deg) brightness(97%) contrast(87%);
     }
 
     .welcome-card {
         padding: 10px 20px;
+        max-width: 100%;
     }
 
     .welcome-text {
@@ -479,6 +482,9 @@
 
     .welcome-name {
         font-size: 1.25rem;
+        max-width: 180px;
+        /* Force it to wrap max ~2 words per line on mobile */
+        white-space: normal;
     }
 
     .bottom-nav {

@@ -7,8 +7,8 @@ service cloud.firestore {
     }
 
     function getRole() {
-      // Usamos el token personalizado que generaremos con Cloud Functions
-      return request.auth.token.role;
+      // Leemos el rol directamente de la base de datos ya que aún no tenemos Cloud Functions para Claims
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.Rol;
     }
 
     function isSuperAdmin() {
@@ -20,9 +20,8 @@ service cloud.firestore {
     }
 
     function isActiveUser() {
-      return getRole() == "Usuario Activo" ||
-             getRole() == "Administrador" ||
-             getRole() == "Super Administrador";
+      let role = getRole();
+      return role == "Usuario Activo" || role == "Administrador" || role == "Super Administrador";
     }
 
     match /services/{serviceId} {
