@@ -22,14 +22,25 @@
     <!-- Desktop Sidebar Navigation -->
     <aside class="desktop-sidebar">
         <div class="sidebar-top">
-            <div class="menu-item-container">
-                <img src="./assets/icons/IconApp/menu-hamburguesa.svg" alt="Menu" class="sidebar-icon">
-                <span class="sidebar-text">Menú</span>
+            <div class="menu-item-container" onclick="window.location.href='./servicios.html'">
+                <img src="./assets/icons/IconApp/compras.svg" alt="Servicios" class="sidebar-icon">
+                <span class="sidebar-text">Servicios</span>
             </div>
-            <!-- More menu items could go here later -->
+            <div class="menu-item-container" onclick="window.location.href='./perfil.html'">
+                <img src="./assets/icons/IconApp/usuario.svg" alt="Mi Perfil" class="sidebar-icon">
+                <span class="sidebar-text">Mi Perfil</span>
+            </div>
+            <div class="menu-item-container" onclick="window.location.href='./historial-citas.html'">
+                <img src="./assets/icons/IconApp/calendario.svg" alt="Historial" class="sidebar-icon">
+                <span class="sidebar-text">Historial de Citas</span>
+            </div>
+            <div class="menu-item-container" id="menuLogoutBtnPC">
+                <img src="./assets/icons/IconApp/flecha.svg" alt="Salir" class="sidebar-icon" style="transform: rotate(180deg);">
+                <span class="sidebar-text">Cerrar Sesión</span>
+            </div>
         </div>
         <div class="sidebar-bottom">
-            <div class="menu-item-container">
+            <div class="menu-item-container" onclick="window.location.href='./dashboard.html'">
                 <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="sidebar-icon brand-icon">
             </div>
         </div>
@@ -101,21 +112,39 @@
 
     <!-- Bottom Navigation Bar (Mobile Only) -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <img src="./assets/icons/IconApp/usuario.svg" alt="Usuario">
+        <a href="./servicios.html" class="nav-item">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Servicios">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Servicios</span>
         </a>
-        <a href="#" class="nav-item">
-            <img src="./assets/icons/IconApp/compras.svg" alt="Compras">
+        <a href="./perfil.html" class="nav-item">
+            <img src="./assets/icons/IconApp/usuario.svg" alt="Perfil">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Mi Perfil</span>
         </a>
-        <a href="#" class="nav-item">
-            <img src="./assets/icons/IconApp/calendario.svg" alt="Calendario">
+        <a href="./historial-citas.html" class="nav-item">
+            <img src="./assets/icons/IconApp/calendario.svg" alt="Historial">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Historial</span>
         </a>
-        <a href="#" class="nav-item">
-            <img src="./assets/icons/IconApp/contratos.svg" alt="Contratos">
+        <a href="#" class="nav-item" id="menuLogoutBtnMobile">
+            <img src="./assets/icons/IconApp/flecha.svg" alt="Salir" style="transform: rotate(180deg);">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Salir</span>
         </a>
     </nav>
 
     <script type="module" src="./src/main.js?v=20260224191500"></script>
+<script type="module">
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        function handleLogout() {
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                window.location.href = './index.html';
+            }).catch(err => console.error(err));
+        }
+        document.getElementById('menuLogoutBtnPC')?.addEventListener('click', handleLogout);
+        document.getElementById('menuLogoutBtnMobile')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+    </script>
 </body>
 
 </html>

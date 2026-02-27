@@ -1,4 +1,4 @@
-const { onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { onDocumentWritten, onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
@@ -164,7 +164,7 @@ async function validateDoctorAvailability({ doctorId, startTime, endTime, db }) 
 
 function validateCancellation({ appointment, service }) {
     const policy = service.cancellationPolicy;
-    
+
     if (!policy) return; // Si no hay política estricta, permitimos.
 
     if (policy.allowCancellation === false) {
@@ -207,7 +207,7 @@ exports.createAppointment = onCall(async (request) => {
 
         const service = { id: serviceDoc.id, ...serviceDoc.data() };
         const durationMs = (service.durationMinutes || 60) * 60 * 1000;
-        
+
         const startTimestamp = Timestamp.fromDate(new Date(startTime));
         const endTimestamp = Timestamp.fromDate(new Date(new Date(startTime).getTime() + durationMs));
 
@@ -290,3 +290,118 @@ exports.cancelAppointment = onCall(async (request) => {
         throw new HttpsError("internal", "Error interno al cancelar la cita.", error.message);
     }
 });
+
+/**
+ * Función trigger para gestionar el límite de almacenamiento de fotos clínicas (Storage TTL / FIFO)
+ * Ejecutada cada que se añade una nueva cita al historial de un tratamiento.
+ */
+exports.manageClinicalHistoryLimitation = onDocumentCreated({
+    document: "userPackages/{packageId}/appointmentsHistory/{apptId}",
+    database: "elanza"
+}, async (event) => {
+
+    const db = getDb();
+    const packageId = event.params.packageId;
+    const newAppt = event.data.data();
+
+    if (!newAppt.photos || newAppt.photos.length === 0) {
+        return null; // Si no hay fotos nuevas, no hacemos chequeos costosos
+    }
+
+    try {
+        // Obtenemos tooooodo el historial de este tratamiento (package) ordenado por fecha DESCENDENTE
+        const apptsHistoryRef = db.collection(`userPackages/${packageId}/appointmentsHistory`);
+        const snapshot = await apptsHistoryRef.orderBy("timestamp", "desc").get();
+
+        let allAppts = [];
+        snapshot.forEach(doc => {
+            allAppts.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 1. LIMITE DE 20 CITAS REGISTRADAS
+        if (allAppts.length > 20) {
+            // Borraremos los textos/documentos que excedan 20 (del más viejo al nuevo)
+            const excedentes = allAppts.slice(20);
+            // Promesas de borrado de Docs y sus fotos si existen (doble limpieza)
+            const deletePromises = excedentes.map(async (oldDoc) => {
+                if (oldDoc.photos && oldDoc.photos.length > 0) {
+                    await deleteArrayOfStoragePhotos(oldDoc.photos);
+                }
+                return apptsHistoryRef.doc(oldDoc.id).delete();
+            });
+            await Promise.all(deletePromises);
+
+            // Actualizamos la lista local después de borrar documentos base enteros
+            allAppts = allAppts.slice(0, 20);
+        }
+
+        // 2. LÍMITE DE 8 FOTOS POR TRATAMIENTO (FIFO)
+        let totalPhotosCount = 0;
+        let photosToDelete = [];
+
+        // Como están ordenadas por de más nuevas a viejas, las primeras se "salvan" 
+        for (const appt of allAppts) {
+            if (appt.photos && Array.isArray(appt.photos)) {
+
+                const keptPhotos = []; // Las que sobreviven en esta cita
+                const removedPhotos = []; // Las que pierden su lugar
+
+                for (const photoUrl of appt.photos) {
+                    if (totalPhotosCount < 8) {
+                        totalPhotosCount++;
+                        keptPhotos.push(photoUrl);
+                    } else {
+                        // Excedió el límite MAX (8), las siguientes empiezan en la "lista negra"
+                        removedPhotos.push(photoUrl);
+                        photosToDelete.push(photoUrl);
+                    }
+                }
+
+                // Si de esta cita X algunas fotos cayeron en lista negra, actualizamos la Base de Datos
+                if (removedPhotos.length > 0) {
+                    await apptsHistoryRef.doc(appt.id).update({
+                        photos: keptPhotos // Conserva array re-calculado
+                    });
+                    logger.info(`Se depuraron ${removedPhotos.length} fotos antiguas de la cita ${appt.id}`);
+                }
+            }
+        }
+
+        // Ejecutar la eliminación física desde el Storage (Ahorro Capa Gratuita)
+        if (photosToDelete.length > 0) {
+            await deleteArrayOfStoragePhotos(photosToDelete);
+            logger.info(`[STORAGE CLEANUP] Se borraron ${photosToDelete.length} archivos físicos.`);
+        }
+
+    } catch (e) {
+        logger.error(`Error en manageClinicalHistoryLimitation para package ${packageId}: `, e);
+    }
+});
+
+/**
+ * Función helper pura (Backend) para eliminar N URLs de firebase Storage 
+ */
+async function deleteArrayOfStoragePhotos(urlsArray) {
+    const { getStorage } = require("firebase-admin/storage");
+    const bucket = getStorage().bucket("elanza-91a64.appspot.com");
+
+    const deletePromises = urlsArray.map(async (url) => {
+        try {
+            // La URL suele ser algo como "https://firebasestorage.../v0/b/bucket/o/carpeta%2Ffoto..."
+            // Hay que extraer el 'path' real del archivo
+            const urlObj = new URL(url);
+            let filePath = decodeURIComponent(urlObj.pathname);
+            // filePath se lee /v0/b/elanza-xxxx.appspot.com/o/history/user1/foto.png
+            const parts = filePath.split('/o/');
+            if (parts.length > 1) {
+                const storagePath = parts[1];
+                const file = bucket.file(storagePath);
+                await file.delete();
+            }
+        } catch (err) {
+            logger.warn(`No se pudo eliminar la foto del storage ${url}`, err);
+        }
+    });
+
+    await Promise.allSettled(deletePromises);
+}

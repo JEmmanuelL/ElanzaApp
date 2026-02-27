@@ -26,7 +26,7 @@ const saveUserProfile = async (user, additionalData = {}) => {
     try {
         const ts = serverTimestamp();
         const userProfile = {
-            Rol: 'Usuario Activo', // Default role
+            role: 'Usuario Activo', // Default role
             email: user.email,
             createdAt: ts,
             updatedAt: ts,
@@ -50,7 +50,7 @@ const handleAuthRedirect = async (uid) => {
     try {
         const userDoc = await getDocument('users', uid);
         if (userDoc && userDoc.perfilCompletado) {
-            const rol = userDoc.Rol || 'Usuario Activo';
+            const rol = userDoc.role || userDoc.Rol || 'Usuario Activo';
             if (rol === 'Super Administrador') {
                 window.location.href = './dashboard.html';
             } else {
@@ -102,7 +102,7 @@ export const initLogin = () => {
                         nombre: result.user.displayName,
                         authProvider: 'google',
                         perfilCompletado: false,
-                        Rol: 'Usuario Activo'
+                        role: 'Usuario Activo'
                     });
                 } else {
                     await updateDocument('users', result.user.uid, { lastLoginAt: serverTimestamp() });
@@ -129,7 +129,7 @@ export const initLogin = () => {
                         nombre: result.user.displayName,
                         authProvider: 'facebook',
                         perfilCompletado: false,
-                        Rol: 'Usuario Activo'
+                        role: 'Usuario Activo'
                     });
                 } else {
                     await updateDocument('users', result.user.uid, { lastLoginAt: serverTimestamp() });
@@ -170,7 +170,7 @@ export const initRegister = () => {
                 sexo: document.getElementById('sexo').value,
                 authProvider: 'email',
                 perfilCompletado: true, // Es registro manual, asumimos que llenó todo
-                Rol: 'Usuario Activo'
+                role: 'Usuario Activo'
             };
 
             console.log('Profile Data:', profileData);
@@ -213,7 +213,7 @@ export const initRegister = () => {
                     nombre: result.user.displayName,
                     authProvider: 'google',
                     perfilCompletado: false,
-                    Rol: 'Usuario Activo'
+                    role: 'Usuario Activo'
                 });
 
                 await handleAuthRedirect(result.user.uid);
@@ -242,7 +242,7 @@ export const initRegister = () => {
                     nombre: result.user.displayName,
                     authProvider: 'facebook',
                     perfilCompletado: false,
-                    Rol: 'Usuario Activo'
+                    role: 'Usuario Activo'
                 });
 
                 await handleAuthRedirect(result.user.uid);

@@ -2,51 +2,246 @@
 <html lang="es">
 
 <head>
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - Elanza</title>
-    <link rel="stylesheet" href="./styles/base.css?v=20260224183600">
-    <link rel="stylesheet" href="./styles/layout.css?v=20260224183600">
-    <link rel="stylesheet" href="./styles/components.css?v=20260224183600">
-    <link rel="stylesheet" href="./styles/responsive.css?v=20260224183600">
-    <link rel="manifest" href="./manifest.json?v=20260224183600">
-    <meta name="theme-color" content="#ffffff">
-    <style>
-        .perfil-container {
-            padding: 40px 20px;
-            text-align: center;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elanza | Perfil de Usuario</title>
 
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 24px;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/base.css?v=20260226195800">
+    <link rel="stylesheet" href="./styles/components.css?v=20260226195800">
+    <link rel="stylesheet" href="./styles/responsive.css?v=20260226195800">
+    <link rel="stylesheet" href="./styles/dashboard.css?v=20260226195800">
+    <link rel="stylesheet" href="./styles/perfil.css?v=20260226195800">
+
+    <!-- Iconos base -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
 </head>
 
 <body class="dashboard-body">
 
-    <main class="dashboard-mobile-container" style="padding-top: 20px;">
-        <a href="./dashboard.html" class="back-btn">
-            <img src="./assets/icons/IconApp/flecha.svg" style="transform: rotate(180deg); width: 20px;" alt="Volver">
-            Volver
-        </a>
-
-        <div class="perfil-container">
-            <h1 class="welcome-name">Este es tu perfil</h1>
-            <p style="margin-top: 16px; color: var(--text-muted);" id="user-email-display">Cargando datos...</p>
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="desktop-sidebar">
+        <div class="sidebar-top">
+            <div class="menu-item-container" onclick="window.location.href='./servicios.html'">
+                <img src="./assets/icons/IconApp/compras.svg" alt="Servicios" class="sidebar-icon">
+                <span class="sidebar-text">Servicios</span>
+            </div>
+            <div class="menu-item-container active" onclick="window.location.href='./perfil.html'">
+                <img src="./assets/icons/IconApp/usuario.svg" alt="Mi Perfil" class="sidebar-icon">
+                <span class="sidebar-text">Mi Perfil</span>
+            </div>
+            <div class="menu-item-container" onclick="window.location.href='./historial-citas.html'">
+                <img src="./assets/icons/IconApp/calendario.svg" alt="Historial" class="sidebar-icon">
+                <span class="sidebar-text">Historial de Citas</span>
+            </div>
+            <div class="menu-item-container" id="menuLogoutBtnPC">
+                <img src="./assets/icons/IconApp/flecha.svg" alt="Salir" class="sidebar-icon" style="transform: rotate(180deg);">
+                <span class="sidebar-text">Cerrar Sesión</span>
+            </div>
         </div>
+        <div class="sidebar-bottom">
+            <div class="menu-item-container" onclick="window.location.href='./dashboard.html'">
+                <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="sidebar-icon brand-icon">
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-mobile-container perfil-expansion">
+        <!-- Header -->
+        <header class="dash-header">
+            <div class="dash-welcome">
+                <div class="welcome-card"
+                    style="display:flex; justify-content:space-between; align-items:center; border-radius:16px; padding:16px;">
+                    <div>
+                        <span class="welcome-text">Perfil y Progreso</span>
+                        <h1 class="welcome-name" style="margin:0;">Mis Datos</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="desktop-logo-mask"></div>
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza Icon" class="dash-logo mobile-logo">
+        </header>
+
+        <section class="perfil-layout">
+
+            <!-- Left Header / Profile Info (Editable) -->
+            <div class="profile-edit-section">
+
+                <div class="profile-header-info">
+                    <div class="profile-initial" id="profileInitial"></div>
+                    <div class="profile-name-role">
+                        <h2 id="profileFullName">Cargando...</h2>
+                        <div class="profile-role-badge" id="profileRoleContainer" style="display: none;">
+                            <img src="./assets/icons/IconApp/super-administrador.svg" alt="Rol">
+                            <span id="profileRoleText">Cliente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="userProfileForm" class="profile-form">
+                    <div class="form-group">
+                        <label>Nombre(s)</label>
+                        <input type="text" id="nombreInput" required>
+                    </div>
+
+                    <div class="form-group half-row">
+                        <div>
+                            <label>Apellido Paterno</label>
+                            <input type="text" id="apPaternoInput">
+                        </div>
+                        <div>
+                            <label>Apellido Materno</label>
+                            <input type="text" id="apMaternoInput">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            Correo Electrónico
+                            <img id="providerIconMini" src="./assets/icons/iconMarca.svg" alt="Provider"
+                                style="width: 16px; height: 16px;">
+                        </label>
+                        <input type="email" id="emailInput" required disabled>
+                    </div>
+
+                    <div class="form-group half-row">
+                        <div>
+                            <label>Teléfono</label>
+                            <input type="tel" id="telefonoInput" placeholder="10 dígitos">
+                        </div>
+                        <div>
+                            <label>Sexo</label>
+                            <select id="generoInput">
+                                <option value="" disabled selected>Selecciona tu sexo</option>
+                                <option value="Femenino">Mujer</option>
+                                <option value="Masculino">Hombre</option>
+                                <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacInput">
+                    </div>
+
+                    <button type="button" class="btn-password-change" id="btnChangePassword" style="display: none;">
+                        Cambiar Contraseña
+                    </button>
+
+                    <button type="submit" class="btn btn-primary btn-save-profile" id="btnSaveProfile" disabled>
+                        Guardar Cambios
+                    </button>
+                    <!-- Regresar button solo por usabilidad -->
+                    <button type="button" class="btn btn-save-profile" id="btnBackToDashboard"
+                        style="margin-top: 12px; background:#f5f5f5; color:#333; border: 1.5px solid #ddd;">
+                        Regresar
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- Right Column / Acquired Packages -->
+            <div class="packages-section">
+                <div>
+                    <h3 class="packages-title">Mis Rituales</h3>
+                    <p class="packages-subtitle">Aquí verás tu saldo de citas adquiridas.</p>
+                </div>
+
+                <div class="packages-grid" id="packagesGrid">
+                    <!-- Cards will be injected here via JS -->
+                </div>
+            </div>
+
+        </section>
     </main>
 
-    <script type="module" src="./src/main.js?v=20260224190800"></script>
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="bottom-nav">
+        <a href="./servicios.html" class="nav-item">
+            <img src="./assets/icons/IconApp/compras.svg" alt="Servicios">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Servicios</span>
+        </a>
+        <a href="./perfil.html" class="nav-item active">
+            <img src="./assets/icons/IconApp/usuario.svg" alt="Perfil">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Mi Perfil</span>
+        </a>
+        <a href="./historial-citas.html" class="nav-item">
+            <img src="./assets/icons/IconApp/calendario.svg" alt="Historial">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Historial</span>
+        </a>
+        <a href="#" class="nav-item" id="menuLogoutBtnMobile">
+            <img src="./assets/icons/IconApp/flecha.svg" alt="Salir" style="transform: rotate(180deg);">
+            <span style="font-size: 0.65rem; margin-top: 6px; font-weight: 600; font-family: var(--font-family); color: #888;">Salir</span>
+        </a>
+    </nav>
+
+    <!-- Password Change Modal -->
+    <div id="modalCambiarPassword" class="modal-overlay" style="display: none; z-index: 10000;">
+        <div class="modal-content" style="max-width: 400px; padding: 24px;">
+            <div class="modal-header">
+                <h2>Cambiar Contraseña</h2>
+            </div>
+
+            <form id="passwordForm" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label>Contraseña Actual</label>
+                    <input type="password" id="currentPasswordInput" required
+                        placeholder="Ingresa tu contraseña actual">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña Nueva</label>
+                    <input type="password" id="newPasswordInput" required placeholder="Al menos 6 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña Nueva</label>
+                    <input type="password" id="confirmNewPasswordInput" required
+                        placeholder="Repite la nueva contraseña">
+                </div>
+                <div id="passwordErrorMsg"
+                    style="color: #ef4444; font-size: 0.9rem; margin-bottom: 16px; display: none;">Error</div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" id="btnCancelPassword" class="btn"
+                        style="background:#f5f5f5; border:1px solid #ddd; color:#333; flex: 1;">Cancelar</button>
+                    <button type="submit" id="btnSubmitPassword" class="btn btn-primary"
+                        style="flex: 1;">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Modals for Native Alert Replacement -->
+    <div id="customAlertModal" class="modal-overlay" style="display: none; z-index: 10001;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 30px; align-items: center;">
+            <img src="./assets/icons/iconMarca.svg" alt="Elanza"
+                style="width:48px; display:block; margin:0 auto 16px auto;">
+            <h3 id="customAlertMessage"
+                style="margin-bottom: 24px; font-size: 1.1rem; color: var(--text-color); font-weight: 500;"></h3>
+            <button id="btnCustomAlertOk" class="btn btn-primary" style="width: 100%;">Entendido</button>
+        </div>
+    </div>
+
+    <!-- App Main Script -->
+    <script type="module" src="./src/main.js?v=20260226195800"></script>
+<script type="module">
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        function handleLogout() {
+            const auth = getAuth();
+            signOut(auth).then(() => {
+                window.location.href = './index.html';
+            }).catch(err => console.error(err));
+        }
+        document.getElementById('menuLogoutBtnPC')?.addEventListener('click', handleLogout);
+        document.getElementById('menuLogoutBtnMobile')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+    </script>
 </body>
 
 </html>

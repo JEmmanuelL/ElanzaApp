@@ -77,6 +77,18 @@
     transition-delay: 0.1s;
 }
 
+.menu-item-container.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid #ffffff;
+    padding-left: 20px;
+    /* ajustando el width natural por el border */
+}
+
+.menu-item-container.active .sidebar-text {
+    font-weight: 800;
+    opacity: 1;
+}
+
 .brand-icon {
     width: 36px;
     height: 36px;
@@ -411,7 +423,7 @@
     padding: 12px;
     border-radius: 16px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .nav-item.active {
@@ -425,12 +437,12 @@
     height: 26px;
     object-fit: contain;
     transition: filter 0.2s ease;
-    /* #B09C64 filter */
-    filter: invert(68%) sepia(21%) saturate(543%) hue-rotate(6deg) brightness(87%) contrast(85%);
+    /* Inactivo: gris neutro */
+    filter: invert(50%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
 }
 
 .nav-item.active img {
-    /* Slightly more opaque for active state */
+    /* Active: Dorado original de la marca */
     filter: invert(68%) sepia(50%) saturate(543%) hue-rotate(6deg) brightness(85%) contrast(100%);
 }
 

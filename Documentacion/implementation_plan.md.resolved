@@ -1,0 +1,77 @@
+# Propuesta Arquitectónica: Historial de Citas Interactivo
+
+El objetivo es crear un "Historial de Citas" (bitácora clínica) por cada servicio que el paciente toma. Este módulo no solo mostrará fechas y doctores, sino que permitirá a los doctores llevar un registro fotográfico del avance del tratamiento clínico del paciente, con estrictas reglas de limpieza (auto-borrado) para optimizar costos de nube.
+
+## 1. Reglas de Negocio Definidas
+
+- **Visibilidad:** El paciente puede ver qué Servicio fue, Día, Hora, Nombre del Dr., Notas/Observaciones y hasta 1-2 fotos por sesión.
+- **Registros (Base de Datos):** Solo se guardan en el historial las **últimas 20 citas** pertenecientes a un mismo servicio (por paciente). 
+- **Límites de Fotografía (Storage):** 
+    - Aplica ÚNICAMENTE a servicios que requieren un "Doctor" asignado.
+    - Se permiten **máximo 2 fotos por cita**.
+    - El paciente puede tener **máximo 8 fotos en total almacenadas de manera simultánea** para el total de ese tratamiento.
+    - Tiempo de vida (TTL): **3 meses** desde que se suben.
+    - **Regla de Auto-borrado (FIFO):** Si el paciente ya tiene 8 fotos guardadas (ej. 4 citas de a 2 fotos) y viene a una 5ta cita, al subir las 2 fotos nuevas, el sistema **borrará permanentemente** las 2 fotos más antiguas (las de la cita 1) para hacerle hueco a las nuevas sin pasarse del límite de 8, manteniendo el costo de la nube al ras.
+
+---
+
+## 2. Estimación de Costos (Firebase)
+
+El diseño está estrictamente pensado para ser **casi gratuito** o absorberse cómodamente en la capa gratuita (Spark) durante muchísimo tiempo.
+
+### **Firebase Storage (Almacenamiento de Fotos):**
+- **Capa Gratuita:** Firebase te regala **5 GB** de almacenamiento.
+- **Peso de las fotos:** Si comprimimos las fotos antes de subirlas (desde el código frontend) a formatos modernos (WebP o JPEG calidad 80%), cada foto pesará aprox. `150 KB`.
+- **Límite Teórico Máximo Total:**
+  8 fotos por tratamiento = `1.2 MB` por tratamiento.
+  Si tuvieras *1,000 pacientes* tomando un tratamiento agresivo de fotos *al mismo tiempo*, usarías `1.2 GB`. ¡Aún te sobrarían casi 4 GB de la capa gratuita!
+- **Facturación excedente:** Si por algún milagro rebasas los 5GB, Google cobra `$0.026 USD por GB al mes` (súper barato).
+- **Conclusión:** **El costo de almacenamiento de fotos será $0.00 pesos/dólares** por mucho tiempo gracias a la regla de *Max 8 fotos*.
+
+### **Firestore (Base de Datos / Historial textual):**
+- **Capa Gratuita:** 50,000 lecturas y 20,000 escrituras AL DÍA.
+- Guardar 20 citas máximo como sub-documentos no hace ni "cosquillas" a este límite.
+- Si hacemos que en el documento general del paciente esté un "array" de las últimas 20 citas o lo consultamos con un límite, es hiper-eficiente.
+
+---
+
+## 3. Estrategia de Implementación Técnica (Cómo lo haremos)
+
+### A. Estructura de Base de Datos
+Crearemos una subcolección dentro de `userPackages` (el paquete que compró) llamada `appointmentsHistory`.
+```json
+// Colección: userPackages / {packageId} / appointmentsHistory / {appointmentId}
+{
+   "date": "2026-03-01T10:00:00Z",
+   "doctorId": "dr_xxx",
+   "doctorName": "Dra. Ana López",
+   "notes": "Paciente respondió muy bien a la sesión de láser. Recomendé crema hidratante.",
+   "photos": [
+       "gs://elanza-app.appspot.com/history/user123/pkg456/foto1_timestamp.webp",
+       "gs://elanza-app.appspot.com/history/user123/pkg456/foto2_timestamp.webp"
+   ],
+   "timestamp": 123456789
+}
+```
+
+### B. Funciones en la Nube (Cloud Functions) - "El conserje"
+Crearemos un script automático en el backend (`Node.js Firebase Functions`) que se despierte cada noche (Scheduled Function) o cada vez que un doctor sube una foto (Trigger Function).
+- Su trabajo será contar las fotos en ese `userPackage`. Si hay > 8, tomará las que tengan la fecha más vieja y las **eliminará del Storage de Google**.
+- También rastreará si alguna foto cumplió 90 días (3 meses) y la borrará automáticamente sin que tú hagas nada.
+- Si el paciente pasa de 20 citas registradas en texto, borrará la cita #21 dejándote solo con las 20 más recientes.
+
+### C. Diseño UX/UI (Boceto Visual de la Pantalla)
+Trataremos de mantener todo en la estética `Elanza`:
+
+1. **Top Nav (Historial de Citas)**
+2. **Selector de Paquetes Acordeón:** En móvil veríamos los tratamientos ("Láser Facial", "Masaje"). Al tocar uno, se despliega una línea de tiempo (Vertical).
+3. **Timeline (Línea de Vida):**
+   - A la izquierda: El puntito dorado con el día y mes (Ej. 14 Mar).
+   - A la derecha: Una Tarjeta blanca bonita que diga "Dra. Ana López". Abajo en cursiva fina el texto "Notas...".
+   - Abajo en la tarjeta: Las 1 o 2 miniaturas fotográficas de su avance. (Si le das clic, crecen a pantalla completa).
+   - *Aesthetic:* Mantendremos las tarjetas con esquinas rendondeadas (border-radius: 16px), sombras muy sutiles, tipografía Montserrat.
+
+## User Review Required
+
+> [!IMPORTANT]
+> Revisa la estimación de costos y el planteamiento de las Funciones/Base de datos. ¿Estás de acuerdo con el **boceto estético** (Una Línea de Tiempo Vertical a estilo "Timeline" dividida por tratamientos)? Si me das luz verde, comenzaremos a codificar la estructura de Firebase y este esqueleto frontal.

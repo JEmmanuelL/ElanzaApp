@@ -182,3 +182,19 @@ Para implementar este nuevo flujo de manera segura y económica, la división de
 - Queda **estrictamente prohibido** utilizar las funciones nativas del navegador `alert()`, `confirm()` o `prompt()` en cualquier parte del código a partir de ahora.
 - **Razón:** Estas alertas rompen el diseño estético de la aplicación, bloquean el hilo principal y ofrecen una mala experiencia de usuario.
 - **Solución:** Todo aviso, validación, mensaje de error o confirmación de acciones destructivas (como eliminar un registro) deberá realizarse usando **Modales Personalizados HTML/CSS** que respeten el diseño, los bordes curvos y la paleta de colores de Elanza, o, en su defecto, alertas visuales "inline" (textos pequeños de error debajo de los inputs).
+
+---
+
+## 6. Historial de Citas (Bitácora Clínica y Retención de Storage)
+
+Se ha implementado una subcolección llamada `appointmentsHistory` dentro de cada `userPackage`. Esta subcolección actúa como la bitácora textual y fotográfica del avance.
+
+### A. Reglas de Retención (Limpieza Automatizada)
+Para garantizar mantenernos en la cuota gratuita o muy económica de Firebase Storage:
+1. **Límite de Texto:** El sistema retiene únicamente un máximo de **20 citas** recientes por tratamiento.
+2. **Límite de Medios:** El paciente puede tener en paralelo un máximo de **8 fotografías** por tratamiento.
+3. **Cloud Function (ManageClinicalHistoryLimitation):** Una función asíncrona corre al subir una nueva cita. Si se rebasa la cuota de 8 fotos, las fotos de las citas más antiguas son eliminadas físicamente del Cloud Storage mediante una regla FIFO.
+
+### B. Interfaz Gráfica (Historial)
+- Diseñada mediante Acordeones. 
+- Al abrir el acordeón de un "Láser" o "Limpieza", se renderiza un *Timeline Vertical* con la historia detallada, incluyendo al médico, las notas y accesos a la foto.

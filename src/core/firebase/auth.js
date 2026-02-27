@@ -4,7 +4,10 @@ import {
     signInWithPopup,
     signOut,
     onAuthStateChanged,
-    getIdToken
+    getIdToken,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirebaseAuth, getGoogleProvider, getFacebookProvider } from "./config.js";
 
@@ -54,4 +57,25 @@ export const forceRefreshToken = async () => {
         return await getIdToken(user, true);
     }
     return null;
+};
+
+// --- Manejo de Contraseñas ---
+
+export const getAuthUser = () => {
+    return getFirebaseAuth().currentUser;
+};
+
+export const reauthenticateUser = async (currentPassword) => {
+    const user = getAuthUser();
+    if (!user || !user.email) throw new Error("No hay usuario autenticado o falta email.");
+
+    // Solo aplica para Email Auth
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    return await reauthenticateWithCredential(user, credential);
+};
+
+export const updateUserPassword = async (newPassword) => {
+    const user = getAuthUser();
+    if (!user) throw new Error("No hay usuario autenticado.");
+    return await updatePassword(user, newPassword);
 };

@@ -2,9 +2,8 @@
 import { initFirebase } from './core/firebase/config.js';
 import { initLogin, initRegister } from './modules/auth/index.js';
 import { initDashboard } from './modules/dashboard/index.js';
-import { initProfileCompletion } from './modules/profile/index.js';
+import { initProfileCompletion, initProfile } from './modules/profile/index.js';
 import { initServicios } from './modules/servicios/index.js';
-import { initPerfil } from './modules/perfil/index.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Elanza App Initialized');
@@ -72,9 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialize Perfil placeholder logic
-    const isPerfil = document.querySelector('.perfil-container');
+    const isPerfil = document.querySelector('.perfil-layout');
     if (isPerfil) {
-        initPerfil();
+        initProfile();
     }
 });
 

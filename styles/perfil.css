@@ -1,0 +1,363 @@
+/* Perfil Web - Styles */
+
+.perfil-layout {
+    display: flex;
+    flex-direction: column;
+    /* Vertical on mobile */
+    gap: 32px;
+    padding: 24px 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Override del dashboard container max-width padre */
+main.dashboard-mobile-container.perfil-expansion {
+    max-width: 100% !important;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+@media (min-width: 900px) {
+    .perfil-layout {
+        /* horizontal partitions on pc */
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+/* User Profile Form Card (Top/Left) */
+.profile-edit-section {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    flex: 1;
+    /* Allow it to grow somewhat */
+    max-width: 100%;
+}
+
+@media (min-width: 900px) {
+    .profile-edit-section {
+        max-width: 400px;
+        /* Constrain width on pc, let grid take the rest */
+        position: sticky;
+        top: 24px;
+    }
+}
+
+.profile-header-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.profile-initial {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-color, #c8a272);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.profile-name-role {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profile-name-role h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.profile-role-badge {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(156, 39, 176, 0.1);
+    color: #9C27B0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: fit-content;
+}
+
+.profile-role-badge img {
+    width: 14px;
+    height: 14px;
+    filter: invert(29%) sepia(61%) saturate(3369%) hue-rotate(279deg) brightness(87%) contrast(98%);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--text-color);
+    background-color: #fcfcfc;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color, #c8a272);
+    box-shadow: 0 0 0 3px rgba(200, 162, 114, 0.15);
+    background-color: #ffffff;
+}
+
+.form-group.half-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-group.half-row>div {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .form-group.half-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.btn-password-change {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    border-radius: 12px;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+}
+
+.btn-password-change:hover {
+    background: #f5f5f5;
+    color: var(--text-color);
+}
+
+.btn-save-profile {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    margin-top: 8px;
+    transition: all 0.2s;
+}
+
+.btn-save-profile:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #cccccc !important;
+    border-color: #cccccc !important;
+    color: #666666 !important;
+    box-shadow: none !important;
+}
+
+/* Services / Packages Section (Bottom/Right) */
+.packages-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.packages-title {
+    font-size: 1.6rem;
+    color: var(--text-color);
+    margin: 0;
+    font-weight: 700;
+}
+
+.packages-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+}
+
+.packages-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 850px) {
+    .packages-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .packages-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Individual Package Card */
+.package-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.package-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.package-image-banner {
+    height: 120px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.package-image-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+}
+
+.package-badge-date {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.package-image-banner h3 {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    right: 16px;
+    margin: 0;
+    color: white;
+    font-size: 1.25rem;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.package-content {
+    padding: 20px;
+}
+
+/* Progress Bar Component */
+.progress-container {
+    margin-top: 8px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.progress-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.progress-fraction {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color, #c8a272);
+}
+
+.progress-track {
+    width: 100%;
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c8a272 0%, #d4b58c 100%);
+    border-radius: 5px;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-fill.empty {
+    background: #e0e0e0;
+}
+
+.progress-fill.full {
+    background: linear-gradient(90deg, #4CAF50 0%, #81C784 100%);
+}
+
+/* Floating Action Button (for scheduling from profile context) */
+.btn-schedule-package {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f8f5f0;
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-schedule-package:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-schedule-package:disabled {
+    background: #f5f5f5;
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+}

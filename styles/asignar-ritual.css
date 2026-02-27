@@ -9,7 +9,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 10px;
+    padding: 24px 0;
+    /* Align with header vertically, 0 horizontally */
     max-width: 1200px;
     margin: 0 auto;
     box-sizing: border-box;
@@ -20,7 +21,8 @@ body {
     .ritual-layout {
         flex-direction: row;
         align-items: flex-start;
-        padding: 40px;
+        padding: 24px 0;
+        /* Side padding 0 ensures left align with dash-header */
         /* Fixed desktop missing padding */
     }
 }

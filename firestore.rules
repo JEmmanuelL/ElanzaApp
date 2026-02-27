@@ -36,11 +36,31 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow create, update: if request.auth.uid == userId || isSuperAdmin();
+      allow create: if request.auth.uid == userId || isSuperAdmin();
+      allow update: if 
+        // 1. El dueño del perfil puede modificar sus datos (nombre, tel, etc), pero NO puede alterar su propio nivel de rol
+        (request.auth.uid == userId && 
+         request.resource.data.get('Rol', resource.data.get('Rol', '')) == resource.data.get('Rol', '') &&
+         request.resource.data.get('role', resource.data.get('role', '')) == resource.data.get('role', ''))
+        ||
+        // 2. Super Administrador puede editar a cualquiera, EXCEPTO a otro Super Administrador (y a si mismo por esta via)
+        (isSuperAdmin() && resource.data.get('Rol', '') != 'Super Administrador')
+        ||
+        // 3. Administrador puede modificar a usuarios normales, NUNCA a Administradores ni a Super Administradores, ni puede otorgar dichos rangos
+        (isAdmin() && 
+         resource.data.get('Rol', '') != 'Super Administrador' && 
+         resource.data.get('Rol', '') != 'Administrador' &&
+         request.resource.data.get('Rol', '') != 'Super Administrador' && 
+         request.resource.data.get('Rol', '') != 'Administrador'
+        );
     }
 
     match /userPackages/{packageId} {
       allow read, write: if isAuthenticated();
+      
+      match /appointmentsHistory/{apptId} {
+        allow read, write: if isAuthenticated();
+      }
     }
   }
 }
